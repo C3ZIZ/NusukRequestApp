@@ -1,0 +1,379 @@
+{% extends 'base.html' %}
+
+{% block title %}بوابة المشرفين - طلبات بطاقة الحج{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card border-0 shadow">
+            <div class="card-header bg-white d-flex justify-content-between align-items-center py-3">
+                <h2 class="h4 mb-0">إدارة طلبات بطاقة الحج</h2>
+                <span id="requestCount" class="badge bg-info"></span>
+            </div>
+            <div class="table-controls">
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="searchInput" class="form-control search-input" placeholder="البحث بالاسم، رقم الجواز...">
+                </div>
+                <select id="statusFilter" class="form-select filter-dropdown">
+                    <option value="all">جميع الحالات</option>
+                    <option value="New">الطلبات الجديدة</option>
+                    <option value="Processed">الطلبات المعالجة</option>
+                </select>
+                <select id="reasonFilter" class="form-select filter-dropdown">
+                    <option value="all">جميع الأسباب</option>
+                    <option value="Lost Card">بطاقة مفقودة</option>
+                    <option value="Damaged Card">بطاقة تالفة</option>
+                </select>
+                <select id="writtenFilter" class="form-select filter-dropdown">
+                    <option value="all">جميع حالات الكتابة</option>
+                    <option value="true">تمت الكتابة</option>
+                    <option value="false">لم تتم الكتابة</option>
+                </select>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0" id="requestsTable">
+                        <thead class="table-light">
+                            <tr>
+                                <th onclick="sortTable(document.getElementById('requestsTable'), 0)">المعرف <i class="fas fa-sort ms-1"></i></th>
+                                <th onclick="sortTable(document.getElementById('requestsTable'), 1)">الموظف <i class="fas fa-sort ms-1"></i></th>
+                                <th onclick="sortTable(document.getElementById('requestsTable'), 2)">اسم الحاج <i class="fas fa-sort ms-1"></i></th>
+                                <th onclick="sortTable(document.getElementById('requestsTable'), 3)">رقم الجواز <i class="fas fa-sort ms-1"></i></th>
+                                <th onclick="sortTable(document.getElementById('requestsTable'), 4)">رقم التأشيرة <i class="fas fa-sort ms-1"></i></th>
+                                <th onclick="sortTable(document.getElementById('requestsTable'), 5)">السبب <i class="fas fa-sort ms-1"></i></th>
+                                <th onclick="sortTable(document.getElementById('requestsTable'), 6)">إرجاع البطاقة <i class="fas fa-sort ms-1"></i></th>
+                                <th onclick="sortTable(document.getElementById('requestsTable'), 7)">الحالة <i class="fas fa-sort ms-1"></i></th>
+                                <th onclick="sortTable(document.getElementById('requestsTable'), 8)">الكتابة <i class="fas fa-sort ms-1"></i></th>
+                                <th onclick="sortTable(document.getElementById('requestsTable'), 9)">تاريخ الإنشاء <i class="fas fa-sort ms-1"></i></th>
+                                <th>الإجراءات</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for req in requests %}
+                            <tr data-status="{{ req.status }}" data-reason="{{ req.request_reason }}" data-written="{{ req.is_written|lower }}">
+                                <td>{{ req.id }}</td>
+                                <td>
+                                    <div>{{ req.employee_name }}</div>
+                                    <small class="text-muted">{{ req.employee_number }}</small>
+                                </td>
+                                <td>{{ req.hajj_name }}</td>
+                                <td>{{ req.passport_number }}</td>
+                                <td>{{ req.visa_number }}</td>
+                                <td>
+                                    {% if req.request_reason == "Lost Card" %}
+                                        بطاقة مفقودة
+                                    {% else %}
+                                        بطاقة تالفة
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if req.request_reason == "Damaged Card" %}
+                                        {% if req.card_returned %}
+                                            <span class="badge bg-success">نعم</span>
+                                        {% else %}
+                                            <span class="badge bg-danger">لا</span>
+                                        {% endif %}
+                                    {% else %}
+                                        <span class="badge bg-secondary">غير متاح</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <span class="badge {% if req.status == 'New' %}bg-info{% else %}bg-success{% endif %} status-badge">
+                                        {% if req.status == 'New' %}جديد{% else %}تمت المعالجة{% endif %}
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="badge {% if req.is_written %}bg-success{% else %}bg-secondary{% endif %} written-badge">
+                                        {{ 'نعم' if req.is_written else 'لا' }}
+                                    </span>
+                                </td>
+                                <td>{{ req.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                                <td>
+                                    <div class="btn-group">
+                                        {% if req.status == "New" %}
+                                        <button class="btn btn-sm btn-action btn-processed process-btn" 
+                                               data-request-id="{{ req.id }}" 
+                                               data-status="Processed">
+                                            <i class="fas fa-check ms-1"></i>معالجة
+                                        </button>
+                                        {% else %}
+                                        <button class="btn btn-sm btn-action btn-unprocessed unprocess-btn" 
+                                               data-request-id="{{ req.id }}" 
+                                               data-status="New">
+                                            <i class="fas fa-undo ms-1"></i>إلغاء المعالجة
+                                        </button>
+                                        {% endif %}
+                                        
+                                        {% if not req.is_written %}
+                                        <button class="btn btn-sm btn-action btn-mark-written mark-written-btn" 
+                                               data-request-id="{{ req.id }}" 
+                                               data-written="true">
+                                            <i class="fas fa-pen ms-1"></i>تمت الكتابة
+                                        </button>
+                                        {% else %}
+                                        <button class="btn btn-sm btn-action btn-mark-unwritten mark-unwritten-btn" 
+                                               data-request-id="{{ req.id }}" 
+                                               data-written="false">
+                                            <i class="fas fa-eraser ms-1"></i>إلغاء الكتابة
+                                        </button>
+                                        {% endif %}
+                                    </div>
+                                </td>
+                            </tr>
+                            {% else %}
+                            <tr>
+                                <td colspan="11" class="text-center py-4">
+                                    <div class="empty-state">
+                                        <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
+                                        <p class="mb-0">لم يتم العثور على طلبات في النظام.</p>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white py-3">
+                <h3 class="h5 mb-0">إرشادات للمشرفين</h3>
+            </div>
+            <div class="card-body">
+                <ul class="mb-0">
+                    <li>معالجة الطلبات بسرعة لتقليل وقت الانتظار</li>
+                    <li>التحقق من جميع المعلومات قبل المعالجة</li>
+                    <li>تحديد الطلبات كمكتوبة بمجرد أن تكون البطاقة الفعلية جاهزة</li>
+                    <li>استخدام "إلغاء المعالجة" للطلبات التي تمت معالجتها بالخطأ</li>
+                    <li>الاتصال بالموظف إذا كانت هناك حاجة لمعلومات إضافية</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white py-3">
+                <h3 class="h5 mb-0">ملخص الحالة</h3>
+            </div>
+            <div class="card-body">
+                <div class="row text-center">
+                    <div class="col-4">
+                        <div class="p-3 border rounded mb-2">
+                            <h3 class="h2 mb-0" id="newRequestsCount">0</h3>
+                        </div>
+                        <div class="text-muted">طلبات جديدة</div>
+                    </div>
+                    <div class="col-4">
+                        <div class="p-3 border rounded mb-2">
+                            <h3 class="h2 mb-0" id="processedRequestsCount">0</h3>
+                        </div>
+                        <div class="text-muted">تمت المعالجة</div>
+                    </div>
+                    <div class="col-4">
+                        <div class="p-3 border rounded mb-2">
+                            <h3 class="h2 mb-0" id="writtenRequestsCount">0</h3>
+                        </div>
+                        <div class="text-muted">تمت الكتابة</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    $(document).ready(function() {
+        // Count and display total requests
+        updateRequestCount();
+        updateStatsSummary();
+        
+        // Process request button
+        $(document).on('click', '.process-btn, .unprocess-btn', function() {
+            const requestId = $(this).data('request-id');
+            const status = $(this).data('status');
+            const btn = $(this);
+            
+            $.ajax({
+                url: `/update_status/${requestId}`,
+                method: 'POST',
+                data: { status: status },
+                success: function(response) {
+                    if (response.success) {
+                        // Update UI
+                        const row = btn.closest('tr');
+                        const statusBadge = row.find('.status-badge');
+                        const actionsCell = row.find('td:last-child');
+                        const isProcessed = status === 'Processed';
+                        
+                        if (isProcessed) {
+                            statusBadge.removeClass('bg-info').addClass('bg-success').text('Processed');
+                            
+                            // Replace process button with unprocess button
+                            const unprocessBtn = `
+                                <button class="btn btn-sm btn-action btn-unprocessed unprocess-btn" 
+                                       data-request-id="${requestId}" 
+                                       data-status="New">
+                                    <i class="fas fa-undo me-1"></i>Unprocess
+                                </button>
+                            `;
+                            btn.replaceWith(unprocessBtn);
+                        } else {
+                            statusBadge.removeClass('bg-success').addClass('bg-info').text('New');
+                            
+                            // Replace unprocess button with process button
+                            const processBtn = `
+                                <button class="btn btn-sm btn-action btn-processed process-btn" 
+                                       data-request-id="${requestId}" 
+                                       data-status="Processed">
+                                    <i class="fas fa-check me-1"></i>Process
+                                </button>
+                            `;
+                            btn.replaceWith(processBtn);
+                        }
+                        
+                        row.attr('data-status', status);
+                        
+                        // Update counts
+                        updateStatsSummary();
+                    }
+                },
+                error: function(error) {
+                    alert('Error updating request status. Please try again.');
+                    console.error(error);
+                }
+            });
+        });
+        
+        // Mark written/unwritten button
+        $(document).on('click', '.mark-written-btn, .mark-unwritten-btn', function() {
+            const requestId = $(this).data('request-id');
+            const isWritten = $(this).data('written');
+            const btn = $(this);
+            
+            $.ajax({
+                url: `/update_written/${requestId}`,
+                method: 'POST',
+                data: { is_written: isWritten },
+                success: function(response) {
+                    if (response.success) {
+                        // Update UI
+                        const row = btn.closest('tr');
+                        const writtenBadge = row.find('.written-badge');
+                        
+                        if (isWritten) {
+                            writtenBadge.removeClass('bg-secondary').addClass('bg-success').text('Yes');
+                            
+                            // Replace mark-written with mark-unwritten
+                            const unwrittenBtn = `
+                                <button class="btn btn-sm btn-action btn-mark-unwritten mark-unwritten-btn" 
+                                       data-request-id="${requestId}" 
+                                       data-written="false">
+                                    <i class="fas fa-eraser me-1"></i>Mark Unwritten
+                                </button>
+                            `;
+                            btn.replaceWith(unwrittenBtn);
+                        } else {
+                            writtenBadge.removeClass('bg-success').addClass('bg-secondary').text('No');
+                            
+                            // Replace mark-unwritten with mark-written
+                            const writtenBtn = `
+                                <button class="btn btn-sm btn-action btn-mark-written mark-written-btn" 
+                                       data-request-id="${requestId}" 
+                                       data-written="true">
+                                    <i class="fas fa-pen me-1"></i>Mark Written
+                                </button>
+                            `;
+                            btn.replaceWith(writtenBtn);
+                        }
+                        
+                        row.attr('data-written', isWritten);
+                        
+                        // Update counts
+                        updateStatsSummary();
+                    }
+                },
+                error: function(error) {
+                    alert('Error updating written status. Please try again.');
+                    console.error(error);
+                }
+            });
+        });
+        
+        // Search and filter functionality
+        const searchInput = document.getElementById('searchInput');
+        const statusFilter = document.getElementById('statusFilter');
+        const reasonFilter = document.getElementById('reasonFilter');
+        const writtenFilter = document.getElementById('writtenFilter');
+        
+        searchInput.addEventListener('keyup', filterTable);
+        statusFilter.addEventListener('change', filterTable);
+        reasonFilter.addEventListener('change', filterTable);
+        writtenFilter.addEventListener('change', filterTable);
+        
+        function filterTable() {
+            const searchValue = searchInput.value.toLowerCase();
+            const statusValue = statusFilter.value;
+            const reasonValue = reasonFilter.value;
+            const writtenValue = writtenFilter.value;
+            
+            const rows = $('#requestsTable tbody tr').not(':has(td[colspan])');
+            
+            let visibleCount = 0;
+            
+            rows.each(function() {
+                const row = $(this);
+                const status = row.data('status');
+                const reason = row.data('reason');
+                const written = row.data('written').toString();
+                const text = row.text().toLowerCase();
+                
+                const statusMatch = statusValue === 'all' || status === statusValue;
+                const reasonMatch = reasonValue === 'all' || reason === reasonValue;
+                const writtenMatch = writtenValue === 'all' || written === writtenValue;
+                const textMatch = text.includes(searchValue);
+                
+                if (statusMatch && reasonMatch && writtenMatch && textMatch) {
+                    row.show();
+                    visibleCount++;
+                } else {
+                    row.hide();
+                }
+            });
+            
+            // Update the count
+            $('#requestCount').text(`${visibleCount} من ${rows.length} طلب`);
+        }
+        
+        function updateRequestCount() {
+            const totalRows = $('#requestsTable tbody tr').not(':has(td[colspan])').length;
+            if (totalRows > 0) {
+                $('#requestCount').text(`${totalRows} طلب إجمالي`);
+            } else {
+                $('#requestCount').text('');
+            }
+        }
+        
+        function updateStatsSummary() {
+            const rows = $('#requestsTable tbody tr').not(':has(td[colspan])');
+            
+            // Count requests by status
+            const newRequests = rows.filter('[data-status="New"]').length;
+            const processedRequests = rows.filter('[data-status="Processed"]').length;
+            const writtenRequests = rows.filter('[data-written="true"]').length;
+            
+            // Update the counts on the page
+            $('#newRequestsCount').text(newRequests);
+            $('#processedRequestsCount').text(processedRequests);
+            $('#writtenRequestsCount').text(writtenRequests);
+        }
+    });
+</script>
+{% endblock %}

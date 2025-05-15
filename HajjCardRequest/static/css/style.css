@@ -1,0 +1,342 @@
+/* Custom CSS for Hajj Card Request Management System */
+
+:root {
+    /* Color Variables */
+    --primary: #B88D4B;
+    --primary-hover: #B88D4B;
+    --text: #1c1c1c;
+    --muted-text: #666666;
+    --card-bg: #ffffff;
+    --border: #dddddd;
+    --error: #cc3333;
+    --success: #3a915f;
+    --info: #1e88e5;
+    --background: #f3f3f3;
+    --spacing: 16px;
+}
+
+/* Base Styles */
+body {
+    font-family: 'Tajawal', sans-serif;
+    background-color: var(--background);
+    color: var(--text);
+    line-height: 1.6;
+}
+
+/* RTL specific styles for Arabic */
+html[dir="rtl"] body {
+    text-align: right;
+}
+
+/* LTR specific styles for English */
+html[dir="ltr"] body {
+    text-align: left;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: 'Tajawal', sans-serif;
+    font-weight: 600;
+    color: var(--text);
+}
+
+/* RTL specific adjustments */
+html[dir="rtl"] .fa-sort, 
+html[dir="rtl"] .fa-search {
+    transform: scaleX(-1);
+}
+
+/* Table text alignment based on language direction */
+html[dir="rtl"] .table th, 
+html[dir="rtl"] .table td {
+    text-align: right;
+}
+
+html[dir="ltr"] .table th, 
+html[dir="ltr"] .table td {
+    text-align: left;
+}
+
+/* Override Bootstrap Colors */
+.bg-primary {
+    background-color: var(--primary) !important;
+}
+
+.bg-info {
+    background-color: var(--info) !important;
+}
+
+.bg-success {
+    background-color: var(--success) !important;
+}
+
+.bg-danger {
+    background-color: var(--error) !important;
+}
+
+.text-primary {
+    color: var(--primary) !important;
+}
+
+.text-muted {
+    color: var(--muted-text) !important;
+}
+
+.btn-primary {
+    background-color: var(--primary);
+    border-color: var(--primary);
+    color: #fff;
+}
+
+.btn-primary:hover, .btn-primary:focus {
+    background-color: var(--primary-hover);
+    border-color: var(--primary-hover);
+}
+
+.btn-outline-primary {
+    color: var(--primary);
+    border-color: var(--primary);
+}
+
+.btn-outline-primary:hover, .btn-outline-primary.active {
+    background-color: var(--primary);
+    border-color: var(--primary);
+    color: #fff;
+}
+
+/* Header */
+header {
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+
+/* Card Styling */
+.card {
+    border-radius: 8px;
+    overflow: hidden;
+    transition: transform 0.3s, box-shadow 0.3s;
+    margin-bottom: var(--spacing);
+    background-color: var(--card-bg);
+    border-color: var(--border);
+}
+
+.card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.1) !important;
+}
+
+.card-img-top {
+    height: 200px;
+    object-fit: cover;
+}
+
+.card-header {
+    border-bottom: 1px solid var(--border);
+}
+
+/* Landing Page Portal Cards */
+.portal-card {
+    height: 350px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 2rem;
+    transition: all 0.3s ease;
+}
+
+.portal-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 30px rgba(0,0,0,0.1) !important;
+}
+
+.portal-card i {
+    font-size: 4rem;
+    margin-bottom: 1.5rem;
+    color: var(--primary);
+}
+
+.portal-card h2 {
+    margin-bottom: 1rem;
+}
+
+.portal-card p {
+    margin-bottom: 1.5rem;
+    color: var(--muted-text);
+}
+
+/* Table Styling */
+.table {
+    margin-bottom: 0;
+    border-color: var(--border);
+}
+
+.table th {
+    font-weight: 600;
+    border-top: none;
+    color: var(--text);
+}
+
+.table-hover tbody tr:hover {
+    background-color: rgba(212, 165, 90, 0.05);
+}
+
+/* Search and Filter Controls */
+.table-controls {
+    background-color: var(--card-bg);
+    border-bottom: 1px solid var(--border);
+    padding: 1rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: center;
+}
+
+.search-box {
+    position: relative;
+    flex-grow: 1;
+}
+
+/* Search box icon positioning based on language direction */
+html[dir="rtl"] .search-box i {
+    position: absolute;
+    right: 10px;
+    top: 10px;
+    color: var(--muted-text);
+}
+
+html[dir="ltr"] .search-box i {
+    position: absolute;
+    left: 10px;
+    top: 10px;
+    color: var(--muted-text);
+}
+
+/* Search input padding based on language direction */
+html[dir="rtl"] .search-input {
+    padding-right: 35px;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+}
+
+html[dir="ltr"] .search-input {
+    padding-left: 35px;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+}
+
+.filter-dropdown {
+    min-width: 150px;
+}
+
+/* Form Controls */
+.form-control, .form-select {
+    border-radius: 6px;
+    border: 1px solid #ddd;
+    padding: 10px 15px;
+    font-size: 0.95rem;
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: var(--secondary);
+    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+}
+
+.form-label {
+    font-weight: 500;
+    margin-bottom: 6px;
+}
+
+/* Badge Styling */
+.badge {
+    font-weight: 500;
+    padding: 5px 10px;
+    border-radius: 4px;
+}
+
+.badge.bg-new {
+    background-color: var(--info);
+}
+
+.badge.bg-processed {
+    background-color: var(--success);
+}
+
+.badge.bg-yes {
+    background-color: var(--success);
+}
+
+.badge.bg-no {
+    background-color: var(--muted-text);
+}
+
+/* Action Buttons */
+.btn-action {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.75rem;
+    margin-right: 0.25rem;
+}
+
+.btn-processed, .btn-unprocessed {
+    color: #fff;
+}
+
+.btn-processed {
+    background-color: var(--success);
+    border-color: var(--success);
+}
+
+.btn-unprocessed {
+    background-color: var(--info);
+    border-color: var(--info);
+}
+
+.btn-mark-written, .btn-mark-unwritten {
+    border-color: var(--border);
+}
+
+.btn-mark-written {
+    color: var(--success);
+}
+
+.btn-mark-unwritten {
+    color: var(--muted-text);
+}
+
+/* Empty State */
+.empty-state {
+    padding: var(--spacing) 0;
+    text-align: center;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .card-img-top {
+        height: 160px;
+    }
+    
+    .table-responsive {
+        overflow-x: auto;
+    }
+}
+
+/* Status Pills */
+.status-badge, .written-badge {
+    font-size: 0.8rem;
+    padding: 0.35em 0.65em;
+}
+
+/* Filter Buttons */
+.btn-group .btn {
+    border-radius: 6px;
+    margin: 0 2px;
+}
+
+/* Form Spacing */
+.row.g-3 > * {
+    padding-bottom: calc(var(--spacing) / 2);
+}
+
+/* Smooth Transitions */
+.alert, .badge, .btn, .form-control, .form-check-input {
+    transition: all 0.2s ease-in-out;
+}

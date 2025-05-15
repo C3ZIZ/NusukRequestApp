@@ -1,0 +1,403 @@
+{% extends 'base.html' %}
+
+{% block title %}
+{% if language == 'ar' %}
+بوابة الموظفين - طلبات بطاقة الحج
+{% else %}
+Employee Portal - Hajj Card Requests
+{% endif %}
+{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-6">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-header bg-white py-3">
+                <h2 class="card-title h4 mb-0">
+                    {% if language == 'ar' %}
+                    تقديم طلب بطاقة حج جديد
+                    {% else %}
+                    Submit New Hajj Card Request
+                    {% endif %}
+                </h2>
+            </div>
+            <div class="card-body">
+                <form id="requestForm" action="{{ url_for('submit_request') }}" method="post" class="needs-validation" novalidate>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            {% if language == 'ar' %}
+                            <label for="employee_name" class="form-label">اسم الموظف</label>
+                            {% else %}
+                            <label for="employee_name" class="form-label">Employee Name</label>
+                            {% endif %}
+                            <input type="text" class="form-control" id="employee_name" name="employee_name" required>
+                            <div class="invalid-feedback">
+                                {% if language == 'ar' %}
+                                يرجى إدخال اسم الموظف
+                                {% else %}
+                                Please enter employee name
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            {% if language == 'ar' %}
+                            <label for="employee_number" class="form-label">رقم الموظف</label>
+                            {% else %}
+                            <label for="employee_number" class="form-label">Employee Number</label>
+                            {% endif %}
+                            <input type="text" class="form-control" id="employee_number" name="employee_number" placeholder="05XXXXXXXX" pattern="05[0-9]{8}" required>
+                            <div class="invalid-feedback">
+                                {% if language == 'ar' %}
+                                يجب أن يكون 10 أرقام ويبدأ بـ "05"
+                                {% else %}
+                                Must be 10 digits and start with "05"
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            {% if language == 'ar' %}
+                            <label for="hajj_name" class="form-label">اسم الحاج</label>
+                            {% else %}
+                            <label for="hajj_name" class="form-label">Hajj Name</label>
+                            {% endif %}
+                            <input type="text" class="form-control" id="hajj_name" name="hajj_name" required>
+                            <div class="invalid-feedback">
+                                {% if language == 'ar' %}
+                                يرجى إدخال اسم الحاج
+                                {% else %}
+                                Please enter Hajj name
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            {% if language == 'ar' %}
+                            <label for="passport_number" class="form-label">رقم جواز السفر</label>
+                            {% else %}
+                            <label for="passport_number" class="form-label">Passport Number</label>
+                            {% endif %}
+                            <input type="text" class="form-control" id="passport_number" name="passport_number" required>
+                            <div class="invalid-feedback">
+                                {% if language == 'ar' %}
+                                يرجى إدخال رقم جواز السفر
+                                {% else %}
+                                Please enter passport number
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            {% if language == 'ar' %}
+                            <label for="visa_number" class="form-label">رقم التأشيرة</label>
+                            {% else %}
+                            <label for="visa_number" class="form-label">Visa Number</label>
+                            {% endif %}
+                            <input type="text" class="form-control" id="visa_number" name="visa_number" required>
+                            <div class="invalid-feedback">
+                                {% if language == 'ar' %}
+                                يرجى إدخال رقم التأشيرة
+                                {% else %}
+                                Please enter visa number
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            {% if language == 'ar' %}
+                            <label for="request_reason" class="form-label">سبب الطلب</label>
+                            {% else %}
+                            <label for="request_reason" class="form-label">Request Reason</label>
+                            {% endif %}
+                            <select class="form-select" id="request_reason" name="request_reason" required>
+                                {% if language == 'ar' %}
+                                <option value="" selected disabled>اختر السبب</option>
+                                <option value="Lost Card">بطاقة مفقودة</option>
+                                <option value="Damaged Card">بطاقة تالفة</option>
+                                {% else %}
+                                <option value="" selected disabled>Select reason</option>
+                                <option value="Lost Card">Lost Card</option>
+                                <option value="Damaged Card">Damaged Card</option>
+                                {% endif %}
+                            </select>
+                            <div class="invalid-feedback">
+                                {% if language == 'ar' %}
+                                يرجى اختيار سبب الطلب
+                                {% else %}
+                                Please select a reason
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-12" id="cardReturnedContainer" style="display: none;">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="card_returned" name="card_returned">
+                                <label class="form-check-label" for="card_returned">
+                                    {% if language == 'ar' %}
+                                    تم إرجاع البطاقة
+                                    {% else %}
+                                    Card returned
+                                    {% endif %}
+                                </label>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <button type="submit" class="btn btn-primary w-100">
+                                {% if language == 'ar' %}
+                                تقديم الطلب
+                                {% else %}
+                                Submit Request
+                                {% endif %}
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-header bg-white py-3">
+                <h2 class="card-title h4 mb-0">
+                    {% if language == 'ar' %}
+                    عن خدمة بطاقة الحج
+                    {% else %}
+                    About Hajj Card Service
+                    {% endif %}
+                </h2>
+            </div>
+            <div class="card-body">
+                {% if language == 'ar' %}
+                <p>يرجى التأكد من دقة جميع المعلومات قبل التقديم. لن يتم قبول طلبات مكررة لنفس جواز السفر إذا كان هناك طلب قيد المعالجة بالفعل.</p>
+                <p>للتواصل: 00966538623767</p>
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle ms-2"></i>
+                    للحصول على أي مساعدة، يرجى الاتصال بفريق الدعم.
+                </div>
+                {% else %}
+                <p>Please ensure all information is accurate before submission. Duplicate requests for the same passport number will not be accepted if there is already an active request being processed.</p>
+                <p>For contact: 00966538623767</p>
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle me-2"></i>
+                    For any assistance, please contact Abdulaziz Hafiz.
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card border-0 shadow-sm">
+    <div class="card-header bg-white d-flex justify-content-between align-items-center py-3">
+        <h2 class="mb-0 h4">
+            {% if language == 'ar' %}
+            جميع طلبات بطاقة الحج
+            {% else %}
+            All Hajj Card Requests
+            {% endif %}
+        </h2>
+        <span id="requestCount" class="badge bg-info"></span>
+    </div>
+    <div class="table-controls">
+        <div class="search-box">
+            <i class="fas fa-search"></i>
+            <input type="text" id="searchInput" class="form-control search-input" placeholder="{% if language == 'ar' %}بحث في الطلبات...{% else %}Search requests...{% endif %}">
+        </div>
+        <select id="statusFilter" class="form-select filter-dropdown">
+            {% if language == 'ar' %}
+            <option value="all">جميع الحالات</option>
+            <option value="New">جديد</option>
+            <option value="Processed">تمت المعالجة</option>
+            {% else %}
+            <option value="all">All Statuses</option>
+            <option value="New">New</option>
+            <option value="Processed">Processed</option>
+            {% endif %}
+        </select>
+        <select id="reasonFilter" class="form-select filter-dropdown">
+            {% if language == 'ar' %}
+            <option value="all">جميع الأسباب</option>
+            <option value="Lost Card">بطاقة مفقودة</option>
+            <option value="Damaged Card">بطاقة تالفة</option>
+            {% else %}
+            <option value="all">All Reasons</option>
+            <option value="Lost Card">Lost Card</option>
+            <option value="Damaged Card">Damaged Card</option>
+            {% endif %}
+        </select>
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0" id="requestsTable">
+                <thead class="table-light">
+                    <tr>
+                        {% if language == 'ar' %}
+                        <th onclick="sortTable(document.getElementById('requestsTable'), 0)">المعرف <i class="fas fa-sort ms-1"></i></th>
+                        <th onclick="sortTable(document.getElementById('requestsTable'), 1)">اسم الموظف <i class="fas fa-sort ms-1"></i></th>
+                        <th onclick="sortTable(document.getElementById('requestsTable'), 2)">اسم الحاج <i class="fas fa-sort ms-1"></i></th>
+                        <th onclick="sortTable(document.getElementById('requestsTable'), 3)">رقم جواز السفر <i class="fas fa-sort ms-1"></i></th>
+                        <th onclick="sortTable(document.getElementById('requestsTable'), 4)">سبب الطلب <i class="fas fa-sort ms-1"></i></th>
+                        <th onclick="sortTable(document.getElementById('requestsTable'), 5)">إرجاع البطاقة <i class="fas fa-sort ms-1"></i></th>
+                        <th onclick="sortTable(document.getElementById('requestsTable'), 6)">الحالة <i class="fas fa-sort ms-1"></i></th>
+                        <th onclick="sortTable(document.getElementById('requestsTable'), 7)">تاريخ الإنشاء <i class="fas fa-sort ms-1"></i></th>
+                        {% else %}
+                        <th onclick="sortTable(document.getElementById('requestsTable'), 0)">ID <i class="fas fa-sort me-1"></i></th>
+                        <th onclick="sortTable(document.getElementById('requestsTable'), 1)">Employee <i class="fas fa-sort me-1"></i></th>
+                        <th onclick="sortTable(document.getElementById('requestsTable'), 2)">Hajj Name <i class="fas fa-sort me-1"></i></th>
+                        <th onclick="sortTable(document.getElementById('requestsTable'), 3)">Passport <i class="fas fa-sort me-1"></i></th>
+                        <th onclick="sortTable(document.getElementById('requestsTable'), 4)">Reason <i class="fas fa-sort me-1"></i></th>
+                        <th onclick="sortTable(document.getElementById('requestsTable'), 5)">Card Returned <i class="fas fa-sort me-1"></i></th>
+                        <th onclick="sortTable(document.getElementById('requestsTable'), 6)">Status <i class="fas fa-sort me-1"></i></th>
+                        <th onclick="sortTable(document.getElementById('requestsTable'), 7)">Created <i class="fas fa-sort me-1"></i></th>
+                        {% endif %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for req in requests %}
+                    <tr data-status="{{ req.status }}" data-reason="{{ req.request_reason }}">
+                        <td>{{ req.id }}</td>
+                        <td>
+                            <div>{{ req.employee_name }}</div>
+                            <small class="text-muted">{{ req.employee_number }}</small>
+                        </td>
+                        <td>{{ req.hajj_name }}</td>
+                        <td>{{ req.passport_number }}</td>
+                        <td>
+                            {% if req.request_reason == "Lost Card" %}
+                                {% if language == 'ar' %}بطاقة مفقودة{% else %}Lost Card{% endif %}
+                            {% else %}
+                                {% if language == 'ar' %}بطاقة تالفة{% else %}Damaged Card{% endif %}
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if req.request_reason == "Damaged Card" %}
+                                {% if req.card_returned %}
+                                    <span class="badge bg-success">{% if language == 'ar' %}نعم{% else %}Yes{% endif %}</span>
+                                {% else %}
+                                    <span class="badge bg-danger">{% if language == 'ar' %}لا{% else %}No{% endif %}</span>
+                                {% endif %}
+                            {% else %}
+                                <span class="badge bg-secondary">{% if language == 'ar' %}غير متاح{% else %}N/A{% endif %}</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if req.status == "New" %}
+                                <span class="badge bg-info">{% if language == 'ar' %}جديد{% else %}New{% endif %}</span>
+                            {% else %}
+                                <span class="badge bg-success">{% if language == 'ar' %}تمت المعالجة{% else %}Processed{% endif %}</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ req.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="8" class="text-center py-4">
+                            <p class="text-muted mb-0">
+                                {% if language == 'ar' %}
+                                لم يتم العثور على طلبات. قم بتقديم طلب جديد للبدء.
+                                {% else %}
+                                No requests found. Submit a new request to get started.
+                                {% endif %}
+                            </p>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Show/hide card returned checkbox based on request reason
+    document.getElementById('request_reason').addEventListener('change', function() {
+        const cardReturnedContainer = document.getElementById('cardReturnedContainer');
+        if (this.value === 'Damaged Card') {
+            cardReturnedContainer.style.display = 'block';
+        } else {
+            cardReturnedContainer.style.display = 'none';
+            document.getElementById('card_returned').checked = false;
+        }
+    });
+
+    // Form validation
+    (function () {
+        'use strict'
+        const forms = document.querySelectorAll('.needs-validation');
+        Array.from(forms).forEach(function (form) {
+            form.addEventListener('submit', function (event) {
+                if (!form.checkValidity()) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+                form.classList.add('was-validated');
+            }, false);
+        });
+    })();
+    
+    // Search and filter functionality
+    document.addEventListener('DOMContentLoaded', function() {
+        const requestsTable = document.getElementById('requestsTable');
+        const searchInput = document.getElementById('searchInput');
+        const statusFilter = document.getElementById('statusFilter');
+        const reasonFilter = document.getElementById('reasonFilter');
+        const requestCountBadge = document.getElementById('requestCount');
+        
+        // Count and display total requests
+        updateRequestCount();
+        
+        // Search functionality
+        searchInput.addEventListener('keyup', filterTable);
+        
+        // Status filter
+        statusFilter.addEventListener('change', filterTable);
+        
+        // Reason filter
+        reasonFilter.addEventListener('change', filterTable);
+        
+        function filterTable() {
+            const searchValue = searchInput.value.toLowerCase();
+            const statusValue = statusFilter.value;
+            const reasonValue = reasonFilter.value;
+            const rows = requestsTable.querySelectorAll('tbody tr:not([colspan])');
+            
+            let visibleCount = 0;
+            
+            rows.forEach(row => {
+                const status = row.dataset.status;
+                const reason = row.dataset.reason;
+                const text = row.textContent.toLowerCase();
+                
+                const statusMatch = statusValue === 'all' || status === statusValue;
+                const reasonMatch = reasonValue === 'all' || reason === reasonValue;
+                const textMatch = text.includes(searchValue);
+                
+                if (statusMatch && reasonMatch && textMatch) {
+                    row.style.display = '';
+                    visibleCount++;
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+            
+            // Update displayed count
+            updateRequestCount(visibleCount);
+        }
+        
+        function updateRequestCount(count) {
+            const totalRows = requestsTable.querySelectorAll('tbody tr:not([colspan])').length;
+            if (count === undefined) {
+                count = totalRows;
+            }
+            
+            if (totalRows === 0) {
+                requestCountBadge.textContent = '';
+            } else {
+                const language = document.documentElement.lang;
+                if (language === 'ar') {
+                    requestCountBadge.textContent = `${count} من ${totalRows} طلب`;
+                } else {
+                    requestCountBadge.textContent = `${count} of ${totalRows} requests`;
+                }
+            }
+        }
+    });
+</script>
+{% endblock %}
