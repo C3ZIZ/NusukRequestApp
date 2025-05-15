@@ -3,6 +3,8 @@ services:
     name: hajj-request-system
     env: python
     plan: free
-    buildCommand: pip install -r requirements.txt
-    startCommand: gunicorn main:app
+    buildCommand: |
+      pip install poetry
+      poetry install
+    startCommand: poetry run gunicorn main:app
     autoDeploy: true
