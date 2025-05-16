@@ -30,5 +30,10 @@ db.init_app(app)
 # ✅ Auto-create the DB if it doesn't exist
 with app.app_context():
     import models  # Ensure models are loaded
+
+    # ✅ Make sure /data folder exists before SQLite tries to write to it
+    os.makedirs("data", exist_ok=True)
+
     if not os.path.exists("data/database.db"):
         db.create_all()
+
