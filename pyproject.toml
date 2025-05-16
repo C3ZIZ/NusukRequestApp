@@ -1,8 +1,8 @@
 [project]
-name = "hajj-request-system"
+name = "nusuk-request-app"
 version = "0.1.0"
-description = "Flask app for Hajj card request management"
-authors = [{name = "Your Name", email = "you@example.com"}]
+description = "Flask app to manage Hajj card requests"
+authors = [{ name="Your Name", email="you@example.com" }]
 requires-python = ">=3.11"
 dependencies = [
     "flask>=3.1.1",
