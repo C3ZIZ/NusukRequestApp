@@ -1,32 +1,34 @@
 import os
-
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import DeclarativeBase
 from werkzeug.middleware.proxy_fix import ProxyFix
 
-
+# Base model
 class Base(DeclarativeBase):
     pass
 
-
+# Initialize SQLAlchemy with custom base
 db = SQLAlchemy(model_class=Base)
-# create the app
+
+# Create the app
 app = Flask(__name__)
 app.secret_key = os.environ.get("SESSION_SECRET", "hajj_card_service_secret_key")
-app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_host=1)  # needed for url_for to generate with https
+app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_host=1)
 
-# configure the database connection using PostgreSQL
-app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("DATABASE_URL")
+# ✅ Use SQLite for simplicity (stored in /data/database.db)
+app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///data/database.db"
+app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 app.config["SQLALCHEMY_ENGINE_OPTIONS"] = {
     "pool_recycle": 300,
     "pool_pre_ping": True,
 }
-# initialize the app with the extension
+
+# Initialize the database
 db.init_app(app)
 
+# ✅ Auto-create the DB if it doesn't exist
 with app.app_context():
-    # Import the models here to ensure tables are created
-    import models  # noqa: F401
-
-    db.create_all()
+    import models  # Ensure models are loaded
+    if not os.path.exists("data/database.db"):
+        db.create_all()
