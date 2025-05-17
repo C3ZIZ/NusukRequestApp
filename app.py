@@ -17,7 +17,7 @@ app.secret_key = os.environ.get("SESSION_SECRET", "hajj_card_service_secret_key"
 app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_host=1)
 
 # ✅ Use SQLite for simplicity (stored in /data/database.db)
-app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:////tmp/database.db"
+app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("DATABASE_URL")
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 app.config["SQLALCHEMY_ENGINE_OPTIONS"] = {
     "pool_recycle": 300,
@@ -27,10 +27,9 @@ app.config["SQLALCHEMY_ENGINE_OPTIONS"] = {
 # Initialize the database
 db.init_app(app)
 
-# ✅ Auto-create the DB if it doesn't exist
+
 with app.app_context():
     import models  # Ensure models are loaded
-    if not os.path.exists("/tmp/database.db"):
-        db.create_all()
+    db.create_all()
 
 
