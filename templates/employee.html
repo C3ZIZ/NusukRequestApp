@@ -279,9 +279,9 @@ Employee Portal - Hajj Card Requests
                         </td>
                         <td>
                             {% if req.status == "New" %}
-                                <span class="badge bg-info">{% if language == 'ar' %}جديد{% else %}New{% endif %}</span>
+                                <span class="badge bg-info">{% if language == 'ar' %}لم تصل البطاقة{% else %}New{% endif %}</span>
                             {% else %}
-                                <span class="badge bg-success">{% if language == 'ar' %}تمت المعالجة{% else %}Processed{% endif %}</span>
+                                <span class="badge bg-success">{% if language == 'ar' %}وصلت البطاقة{% else %}Processed{% endif %}</span>
                             {% endif %}
                         </td>
                         <td>{{ req.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
