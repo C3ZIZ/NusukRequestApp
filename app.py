@@ -16,8 +16,8 @@ app = Flask(__name__)
 app.secret_key = os.environ.get("SESSION_SECRET", "hajj_card_service_secret_key")
 app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_host=1)
 
-# ✅ Use SQLite for simplicity (stored in /data/database.db)
-app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("DATABASE_URL")
+# Always use Arabic, remove English fallback
+app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("DATABASE_URL") or "sqlite:///data/database.db"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 app.config["SQLALCHEMY_ENGINE_OPTIONS"] = {
     "pool_recycle": 300,

@@ -3,18 +3,11 @@
 {% block content %}
 <div class="row justify-content-center my-5">
     <div class="col-md-10 text-center mb-5">
-        {% if language == 'ar' %}
         <h1 class="display-4 fw-bold">نظام إدارة طلبات بطاقة نسك</h1>
         <p class="lead text-muted">نظام شامل لإدارة طلبات بطاقات نسك ومعالجتها وإدارتها</p>
-        {% else %}
-        <h1 class="display-4 fw-bold">Nusuk Card Request Management System</h1>
-        <p class="lead text-muted">Comprehensive system for submitting, processing, and managing Nusuk card requests</p>
-        {% endif %}
     </div>
-    
     <div class="col-md-10">
         <div class="row">
-            {% if language == 'ar' %}
             <!-- بوابة الموظف -->
             <div class="col-md-6 mb-4">
                 <div class="card portal-card shadow-sm border-0">
@@ -24,7 +17,6 @@
                     <a href="{{ url_for('employee') }}" class="btn btn-primary btn-lg">الدخول إلى بوابة الموظفين</a>
                 </div>
             </div>
-            
             <!-- بوابة المشرف -->
             <div class="col-md-6 mb-4">
                 <div class="card portal-card shadow-sm border-0">
@@ -34,39 +26,15 @@
                     <a href="{{ url_for('admin') }}" class="btn btn-primary btn-lg">الدخول إلى بوابة المشرفين</a>
                 </div>
             </div>
-            {% else %}
-            <!-- Employee Portal -->
-            <div class="col-md-6 mb-4">
-                <div class="card portal-card shadow-sm border-0">
-                    <i class="fas fa-user-tie"></i>
-                    <h2>Employee Portal</h2>
-                    <p>Submit new card requests and view request history</p>
-                    <a href="{{ url_for('employee') }}" class="btn btn-primary btn-lg">Enter Employee Portal</a>
-                </div>
-            </div>
-            
-            <!-- Admin Portal -->
-            <div class="col-md-6 mb-4">
-                <div class="card portal-card shadow-sm border-0">
-                    <i class="fas fa-user-shield"></i>
-                    <h2>Admin Portal</h2>
-                    <p>Process requests and manage the Hajj card system</p>
-                    <a href="{{ url_for('admin') }}" class="btn btn-primary btn-lg">Enter Admin Portal</a>
-                </div>
-            </div>
-            {% endif %}
         </div>
     </div>
 </div>
-
-{% if language == 'ar' %}
 <!-- نظرة عامة على النظام -->
 <div class="row justify-content-center mt-4">
     <div class="col-md-10">
         <div class="card border-0 shadow-sm">
             <div class="card-body p-4">
                 <h3 class="mb-4">عن هذا النظام</h3>
-                
                 <div class="row g-4">
                     <div class="col-md-4">
                         <div class="d-flex align-items-start">
@@ -79,7 +47,6 @@
                             </div>
                         </div>
                     </div>
-                    
                     <div class="col-md-4">
                         <div class="d-flex align-items-start">
                             <div class="bg-primary rounded-circle p-3 ms-3 text-white">
@@ -91,7 +58,6 @@
                             </div>
                         </div>
                     </div>
-                    
                     <div class="col-md-4">
                         <div class="d-flex align-items-start">
                             <div class="bg-primary rounded-circle p-3 ms-3 text-white">
@@ -108,54 +74,4 @@
         </div>
     </div>
 </div>
-{% else %}
-<!-- System Overview -->
-<div class="row justify-content-center mt-4">
-    <div class="col-md-10">
-        <div class="card border-0 shadow-sm">
-            <div class="card-body p-4">
-                <h3 class="mb-4">About This System</h3>
-                
-                <div class="row g-4">
-                    <div class="col-md-4">
-                        <div class="d-flex align-items-start">
-                            <div class="bg-primary rounded-circle p-3 me-3 text-white">
-                                <i class="fas fa-id-card"></i>
-                            </div>
-                            <div>
-                                <h4 class="h5">Card Requests</h4>
-                                <p class="text-muted small">Submit requests for lost or damaged cards</p>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="col-md-4">
-                        <div class="d-flex align-items-start">
-                            <div class="bg-primary rounded-circle p-3 me-3 text-white">
-                                <i class="fas fa-tasks"></i>
-                            </div>
-                            <div>
-                                <h4 class="h5">Request Processing</h4>
-                                <p class="text-muted small">Efficiently process and track request status</p>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="col-md-4">
-                        <div class="d-flex align-items-start">
-                            <div class="bg-primary rounded-circle p-3 me-3 text-white">
-                                <i class="fas fa-chart-line"></i>
-                            </div>
-                            <div>
-                                <h4 class="h5">Management</h4>
-                                <p class="text-muted small">Comprehensive tools for request management</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-{% endif %}
 {% endblock %}

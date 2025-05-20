@@ -18,26 +18,11 @@ MESSAGES = {
         'duplicate_request': 'يوجد طلب نشط بالفعل لرقم جواز السفر {passport}',
         'request_submitted': 'تم تقديم الطلب بنجاح!',
         'request_error': 'حدث خطأ أثناء تقديم طلبك.'
-    },
-    'en': {
-        'employee_number_invalid': 'Employee number must be 10 digits and start with "05"',
-        'all_fields_required': 'All fields are required',
-        'duplicate_request': 'An active request already exists for passport number {passport}',
-        'request_submitted': 'Request submitted successfully!',
-        'request_error': 'An error occurred while submitting your request.'
     }
 }
 
-@app.route('/switch_language/<lang>')
-def switch_language(lang):
-    """Switch application language"""
-    if lang in ['en', 'ar']:
-        session['language'] = lang
-    return redirect(request.referrer or url_for('index'))
-
-# Helper function to get current language
 def get_language():
-    return session.get('language', 'ar')  # Default to Arabic
+    return 'ar'
 
 @app.route('/')
 def index():

@@ -1,16 +1,12 @@
 <!DOCTYPE html>
-<html lang="{{ 'ar' if language == 'ar' else 'en' }}" dir="{{ 'rtl' if language == 'ar' else 'ltr' }}">
+<html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}{{ 'نظام إدارة طلبات بطاقة نسك' if language == 'ar' else 'Nusuk Card Request Management System' }}{% endblock %}</title>
+    <title>{% block title %}نظام إدارة طلبات بطاقة نسك{% endblock %}</title>
     
     <!-- Bootstrap 5 CSS -->
-    {% if language == 'ar' %}
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.rtl.min.css">
-    {% else %}
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css">
-    {% endif %}
     
     <!-- Google Fonts: Arabic fonts - Tajawal -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -32,23 +28,10 @@
                 <div class="col-md-6">
                     <a href="{{ url_for('index') }}" class="text-white text-decoration-none">
                         <h1 class="h3 mb-0">
-                            <i class="fas fa-id-card {% if language == 'ar' %}ms-2{% else %}me-2{% endif %}"></i>
-                            {{ 'نظام إدارة طلبات بطاقة نسك' if language == 'ar' else 'Nusuk Card Request Management System' }}
+                            <i class="fas fa-id-card ms-2"></i>
+                            نظام إدارة طلبات بطاقة نسك
                         </h1>
                     </a>
-                </div>
-                <div class="col-md-6">
-                    <nav class="d-flex {% if language == 'ar' %}justify-content-start{% else %}justify-content-end{% endif %}">
-                        {% if language == 'ar' %}
-                        <a href="{{ url_for('switch_language', lang='en') }}" class="btn btn-light">
-                            <i class="fas fa-language ms-1"></i>English
-                        </a>
-                        {% else %}
-                        <a href="{{ url_for('switch_language', lang='ar') }}" class="btn btn-light">
-                            <i class="fas fa-language me-1"></i>عربي
-                        </a>
-                        {% endif %}
-                    </nav>
                 </div>
             </div>
         </div>
@@ -74,7 +57,7 @@
     <footer class="bg-light py-4 mt-5">
         <div class="container text-center text-muted">
             <p class="mb-0">
-  &copy; 2025 {{ 'نظام إدارة طلبات بطاقة نسك — جميع الحقوق محفوظة لـ Abdulaziz Hafiz، C3ZIZ، ونسك' if language == 'ar' else 'Nusuk Card Request Management System — All rights reserved © Abdulaziz Hafiz, C3ZIZ, and Nusuk' }}
+  &copy; 2025 نظام إدارة طلبات بطاقة نسك — جميع الحقوق محفوظة لـ Abdulaziz Hafiz، C3ZIZ، ونسك
 </p>
         </div>
     </footer>
