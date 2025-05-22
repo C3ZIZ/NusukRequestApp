@@ -3,19 +3,19 @@ from app import db
 
 
 class HajjCardRequest(db.Model):
-    """Model for Hajj card requests"""
+    __tablename__ = 'hajj_card_request_log'
     id = db.Column(db.Integer, primary_key=True)
     employee_name = db.Column(db.String(100), nullable=False)
     employee_number = db.Column(db.String(10), nullable=False)
     hajj_name = db.Column(db.String(100), nullable=False)
     passport_number = db.Column(db.String(20), nullable=False)
     visa_number = db.Column(db.String(20), nullable=False)
-    request_reason = db.Column(db.String(20), nullable=False)  # "Lost Card" or "Damaged Card"
-    card_returned = db.Column(db.Boolean, default=False)
-    status = db.Column(db.String(20), default="New")  # "New" or "Processed"
-    is_written = db.Column(db.Boolean, default=False)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    request_reason = db.Column(db.String(20), nullable=False)
+    card_returned = db.Column(db.Boolean)
+    status = db.Column(db.String(20))  # CHECK (status IN ...)
+    request_upload = db.Column(db.Boolean)
+    created_at = db.Column(db.DateTime)
+    updated_at = db.Column(db.DateTime)
 
     def __repr__(self):
         return f"<HajjCardRequest {self.id} - {self.hajj_name}>"

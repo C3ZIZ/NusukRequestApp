@@ -146,5 +146,34 @@ def update_written(request_id):
         db.session.rollback()
         return jsonify({"success": False, "error": str(e)}), 500
 
+@app.route('/statistics')
+def statistics():
+    """Statistics page showing various metrics"""
+    total_hajj = db.session.query(db.func.count(HajjCardRequest.id)).scalar()
+    total_lost = db.session.query(db.func.count(HajjCardRequest.id)).filter(
+        HajjCardRequest.request_reason == "Lost Card"
+    ).scalar()
+    total_uploaded = db.session.query(db.func.count(HajjCardRequest.id)).filter(
+        HajjCardRequest.request_upload == True
+    ).scalar()
+    total_delivered = db.session.query(db.func.count(HajjCardRequest.id)).filter(
+        HajjCardRequest.status == "card delivered"
+    ).scalar()
+    total_received = db.session.query(db.func.count(HajjCardRequest.id)).filter(
+        HajjCardRequest.status == "card received"
+    ).scalar()
+    total_found = db.session.query(db.func.count(HajjCardRequest.id)).filter(
+        HajjCardRequest.status == "found"
+    ).scalar()
+
+    return render_template('statistics.html',
+                         language='ar',
+                         total_hajj=total_hajj,
+                         total_lost=total_lost,
+                         total_uploaded=total_uploaded,
+                         total_delivered=total_delivered,
+                         total_received=total_received,
+                         total_found=total_found)
+
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)

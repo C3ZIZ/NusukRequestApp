@@ -17,8 +17,10 @@
                 </div>
                 <select id="statusFilter" class="form-select filter-dropdown">
                     <option value="all">جميع الحالات</option>
-                    <option value="New">الطلبات الجديدة</option>
-                    <option value="Processed">الطلبات المعالجة</option>
+                    <option value="found">تم العثور عليها</option>
+                    <option value="request sent">تم إرسال الطلب</option>
+                    <option value="card received">تم استلام البطاقة</option>
+                    <option value="card delivered">تم تسليم البطاقة</option>
                 </select>
                 <select id="reasonFilter" class="form-select filter-dropdown">
                     <option value="all">جميع الأسباب</option>
@@ -79,9 +81,14 @@
                                     {% endif %}
                                 </td>
                                 <td>
-                                    <span class="badge {% if req.status == 'New' %}bg-info{% else %}bg-success{% endif %} status-badge">
-                                        {% if req.status == 'New' %}جديد{% else %}تمت المعالجة{% endif %}
-                                    </span>
+                                    <select class="form-select form-select-sm status-select" 
+                                            data-request-id="{{ req.id }}" 
+                                            onchange="updateStatus(this)">
+                                        <option value="found" {% if req.status == 'found' %}selected{% endif %}>تم العثور عليها</option>
+                                        <option value="request sent" {% if req.status == 'request sent' %}selected{% endif %}>تم إرسال الطلب</option>
+                                        <option value="card received" {% if req.status == 'card received' %}selected{% endif %}>تم استلام البطاقة</option>
+                                        <option value="card delivered" {% if req.status == 'card delivered' %}selected{% endif %}>تم تسليم البطاقة</option>
+                                    </select>
                                 </td>
                                 <td>
                                     <span class="badge {% if req.is_written %}bg-success{% else %}bg-secondary{% endif %} written-badge">
@@ -190,6 +197,41 @@
 
 {% block extra_js %}
 <script>
+function updateStatus(selectElement) {
+    const requestId = selectElement.dataset.requestId;
+    const newStatus = selectElement.value;
+    
+    $.ajax({
+        url: `/update_status/${requestId}`,
+        method: 'POST',
+        data: { status: newStatus },
+        success: function(response) {
+            if (response.success) {
+                // Update UI
+                const row = $(selectElement).closest('tr');
+                const statusCell = row.find('.status-badge');
+                statusCell.text(getArabicStatus(newStatus));
+                // Update statistics if needed
+                updateStats();
+            }
+        },
+        error: function(error) {
+            alert('حدث خطأ أثناء تحديث الحالة');
+            console.error(error);
+        }
+    });
+}
+
+function getArabicStatus(status) {
+    const statusMap = {
+        'found': 'تم العثور عليها',
+        'request sent': 'تم إرسال الطلب',
+        'card received': 'تم استلام البطاقة',
+        'card delivered': 'تم تسليم البطاقة'
+    };
+    return statusMap[status] || status;
+}
+
     $(document).ready(function() {
         // Count and display total requests
         updateRequestCount();

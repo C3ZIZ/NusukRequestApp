@@ -308,6 +308,36 @@ html[dir="ltr"] .search-input {
     text-align: center;
 }
 
+/* Statistics Page Styling */
+.stats-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.stats-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+.stats-card h2 {
+    font-size: 2rem;
+    font-weight: 600;
+}
+
+.stats-card h6 {
+    font-size: 0.9rem;
+    opacity: 0.9;
+}
+
+.stats-card i {
+    font-size: 2.5rem;
+}
+
+/* Chart container styling */
+canvas#requestsChart {
+    max-height: 400px;
+    width: 100%;
+}
+
 /* Responsive Adjustments */
 @media (max-width: 768px) {
     .card-img-top {
