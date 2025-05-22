@@ -107,7 +107,13 @@
                                         {{ 'نعم' if req.is_written else 'لا' }}
                                     </span>
                                 </td>
-                                <td>{{ req.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                                <td>
+                                    {% if req.created_at %}
+                                        {{ req.created_at.strftime('%Y-%m-%d %H:%M') }}
+                                    {% else %}
+                                        -
+                                    {% endif %}
+                                </td>
                                 <td>
                                     <div class="btn-group">
                                         {% if req.status == "New" %}

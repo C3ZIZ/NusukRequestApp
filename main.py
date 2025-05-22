@@ -42,9 +42,13 @@ def index():
 @app.route('/employee')
 def employee():
     """Employee page to view and submit requests"""
-    language = get_language()
-    requests = HajjCardRequest.query.order_by(HajjCardRequest.created_at.desc()).all()
-    return render_template('employee.html', requests=requests, language=language)
+    try:
+        requests = HajjCardRequest.query.order_by(HajjCardRequest.created_at.desc()).all()
+        return render_template('employee.html', requests=requests, language='ar')
+    except Exception as e:
+        logger.error(f"Error in employee page: {str(e)}")
+        flash("حدث خطأ في النظام", "error")
+        return redirect(url_for('index'))
 
 @app.route('/update_total_hajj', methods=['POST'])
 def update_total_hajj():
@@ -77,12 +81,12 @@ def update_total_hajj():
 def admin():
     """Admin page to manage requests"""
     try:
-        total_hajj = get_total_hajj()
         requests = HajjCardRequest.query.order_by(HajjCardRequest.created_at.desc()).all()
+        total_hajj = get_total_hajj()
         return render_template('admin.html', 
-                             requests=requests, 
-                             language='ar',
-                             total_hajj=total_hajj)
+                            requests=requests, 
+                            language='ar',
+                            total_hajj=total_hajj)
     except Exception as e:
         logger.error(f"Error in admin page: {str(e)}")
         flash("حدث خطأ في النظام", "error")
@@ -137,6 +141,7 @@ def submit_request():
         new_request.request_reason = request_reason
         new_request.card_returned = card_returned
         new_request.created_at = datetime.utcnow()
+        new_request.updated_at = datetime.utcnow()
         
         db.session.add(new_request)
         db.session.commit()
