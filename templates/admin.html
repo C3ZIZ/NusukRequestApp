@@ -103,9 +103,11 @@
                                     </select>
                                 </td>
                                 <td>
-                                    <span class="badge {% if req.is_written %}bg-success{% else %}bg-secondary{% endif %} written-badge">
-                                        {{ 'نعم' if req.is_written else 'لا' }}
-                                    </span>
+                                    {% if req.request_upload %}
+                                        <span class="badge bg-success">نعم</span>
+                                    {% else %}
+                                        <span class="badge bg-secondary">لا</span>
+                                    {% endif %}
                                 </td>
                                 <td>
                                     {% if req.created_at %}
@@ -113,37 +115,6 @@
                                     {% else %}
                                         -
                                     {% endif %}
-                                </td>
-                                <td>
-                                    <div class="btn-group">
-                                        {% if req.status == "New" %}
-                                        <button class="btn btn-sm btn-action btn-processed process-btn" 
-                                               data-request-id="{{ req.id }}" 
-                                               data-status="Processed">
-                                            <i class="fas fa-check ms-1"></i>معالجة
-                                        </button>
-                                        {% else %}
-                                        <button class="btn btn-sm btn-action btn-unprocessed unprocess-btn" 
-                                               data-request-id="{{ req.id }}" 
-                                               data-status="New">
-                                            <i class="fas fa-undo ms-1"></i>إلغاء المعالجة
-                                        </button>
-                                        {% endif %}
-                                        
-                                        {% if not req.is_written %}
-                                        <button class="btn btn-sm btn-action btn-mark-written mark-written-btn" 
-                                               data-request-id="{{ req.id }}" 
-                                               data-written="true">
-                                            <i class="fas fa-pen ms-1"></i>تمت الكتابة
-                                        </button>
-                                        {% else %}
-                                        <button class="btn btn-sm btn-action btn-mark-unwritten mark-unwritten-btn" 
-                                               data-request-id="{{ req.id }}" 
-                                               data-written="false">
-                                            <i class="fas fa-eraser ms-1"></i>إلغاء الكتابة
-                                        </button>
-                                        {% endif %}
-                                    </div>
                                 </td>
                             </tr>
                             {% else %}
@@ -225,17 +196,25 @@ function updateStatus(selectElement) {
         data: { status: newStatus },
         success: function(response) {
             if (response.success) {
-                // Update UI
+                // Show success message
+                const successAlert = `<div class="alert alert-success alert-dismissible fade show" role="alert">
+                    تم تحديث الحالة بنجاح
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>`;
+                $('.container').prepend(successAlert);
+                
+                // Update status badge styling
                 const row = $(selectElement).closest('tr');
-                const statusCell = row.find('.status-badge');
-                statusCell.text(getArabicStatus(newStatus));
-                // Update statistics if needed
-                updateStats();
+                row.attr('data-status', newStatus);
             }
         },
         error: function(error) {
-            alert('حدث خطأ أثناء تحديث الحالة');
-            console.error(error);
+            // Show error message
+            const errorAlert = `<div class="alert alert-danger alert-dismissible fade show" role="alert">
+                حدث خطأ أثناء تحديث الحالة
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>`;
+            $('.container').prepend(errorAlert);
         }
     });
 }
@@ -250,210 +229,48 @@ function getArabicStatus(status) {
     return statusMap[status] || status;
 }
 
-    $(document).ready(function() {
-        // Count and display total requests
-        updateRequestCount();
-        updateStatsSummary();
+// Update filtering to use new status values
+$(document).ready(function() {
+    // Count and display total requests
+    updateRequestCount();
+    
+    const searchInput = document.getElementById('searchInput');
+    const statusFilter = document.getElementById('statusFilter');
+    const reasonFilter = document.getElementById('reasonFilter');
+    
+    searchInput.addEventListener('keyup', filterTable);
+    statusFilter.addEventListener('change', filterTable);
+    reasonFilter.addEventListener('change', filterTable);
+    
+    function filterTable() {
+        const searchValue = searchInput.value.toLowerCase();
+        const statusValue = statusFilter.value;
+        const reasonValue = reasonFilter.value;
         
-        // Process request button
-        $(document).on('click', '.process-btn, .unprocess-btn', function() {
-            const requestId = $(this).data('request-id');
-            const status = $(this).data('status');
-            const btn = $(this);
+        const rows = $('#requestsTable tbody tr').not(':has(td[colspan])');
+        
+        let visibleCount = 0;
+        
+        rows.each(function() {
+            const row = $(this);
+            const status = row.data('status');
+            const reason = row.data('reason');
+            const text = row.text().toLowerCase();
             
-            $.ajax({
-                url: `/update_status/${requestId}`,
-                method: 'POST',
-                data: { status: status },
-                success: function(response) {
-                    if (response.success) {
-                        // Update UI
-                        const row = btn.closest('tr');
-                        const statusBadge = row.find('.status-badge');
-                        const actionsCell = row.find('td:last-child');
-                        const isProcessed = status === 'Processed';
-                        
-                        if (isProcessed) {
-                            statusBadge.removeClass('bg-info').addClass('bg-success').text('Processed');
-                            
-                            // Replace process button with unprocess button
-                            const unprocessBtn = `
-                                <button class="btn btn-sm btn-action btn-unprocessed unprocess-btn" 
-                                       data-request-id="${requestId}" 
-                                       data-status="New">
-                                    <i class="fas fa-undo me-1"></i>Unprocess
-                                </button>
-                            `;
-                            btn.replaceWith(unprocessBtn);
-                        } else {
-                            statusBadge.removeClass('bg-success').addClass('bg-info').text('New');
-                            
-                            // Replace unprocess button with process button
-                            const processBtn = `
-                                <button class="btn btn-sm btn-action btn-processed process-btn" 
-                                       data-request-id="${requestId}" 
-                                       data-status="Processed">
-                                    <i class="fas fa-check me-1"></i>Process
-                                </button>
-                            `;
-                            btn.replaceWith(processBtn);
-                        }
-                        
-                        row.attr('data-status', status);
-                        
-                        // Update counts
-                        updateStatsSummary();
-                    }
-                },
-                error: function(error) {
-                    alert('Error updating request status. Please try again.');
-                    console.error(error);
-                }
-            });
+            const statusMatch = statusValue === 'all' || status === statusValue;
+            const reasonMatch = reasonValue === 'all' || reason === reasonValue;
+            const textMatch = text.includes(searchValue);
+            
+            if (statusMatch && reasonMatch && textMatch) {
+                row.show();
+                visibleCount++;
+            } else {
+                row.hide();
+            }
         });
         
-        // Mark written/unwritten button
-        $(document).on('click', '.mark-written-btn, .mark-unwritten-btn', function() {
-            const requestId = $(this).data('request-id');
-            const isWritten = $(this).data('written');
-            const btn = $(this);
-            
-            $.ajax({
-                url: `/update_written/${requestId}`,
-                method: 'POST',
-                data: { is_written: isWritten },
-                success: function(response) {
-                    if (response.success) {
-                        // Update UI
-                        const row = btn.closest('tr');
-                        const writtenBadge = row.find('.written-badge');
-                        
-                        if (isWritten) {
-                            writtenBadge.removeClass('bg-secondary').addClass('bg-success').text('Yes');
-                            
-                            // Replace mark-written with mark-unwritten
-                            const unwrittenBtn = `
-                                <button class="btn btn-sm btn-action btn-mark-unwritten mark-unwritten-btn" 
-                                       data-request-id="${requestId}" 
-                                       data-written="false">
-                                    <i class="fas fa-eraser me-1"></i>Mark Unwritten
-                                </button>
-                            `;
-                            btn.replaceWith(unwrittenBtn);
-                        } else {
-                            writtenBadge.removeClass('bg-success').addClass('bg-secondary').text('No');
-                            
-                            // Replace mark-unwritten with mark-written
-                            const writtenBtn = `
-                                <button class="btn btn-sm btn-action btn-mark-written mark-written-btn" 
-                                       data-request-id="${requestId}" 
-                                       data-written="true">
-                                    <i class="fas fa-pen me-1"></i>Mark Written
-                                </button>
-                            `;
-                            btn.replaceWith(writtenBtn);
-                        }
-                        
-                        row.attr('data-written', isWritten);
-                        
-                        // Update counts
-                        updateStatsSummary();
-                    }
-                },
-                error: function(error) {
-                    alert('Error updating written status. Please try again.');
-                    console.error(error);
-                }
-            });
-        });
-        
-        // Search and filter functionality
-        const searchInput = document.getElementById('searchInput');
-        const statusFilter = document.getElementById('statusFilter');
-        const reasonFilter = document.getElementById('reasonFilter');
-        const writtenFilter = document.getElementById('writtenFilter');
-        
-        searchInput.addEventListener('keyup', filterTable);
-        statusFilter.addEventListener('change', filterTable);
-        reasonFilter.addEventListener('change', filterTable);
-        writtenFilter.addEventListener('change', filterTable);
-        
-        function filterTable() {
-            const searchValue = searchInput.value.toLowerCase();
-            const statusValue = statusFilter.value;
-            const reasonValue = reasonFilter.value;
-            const writtenValue = writtenFilter.value;
-            
-            const rows = $('#requestsTable tbody tr').not(':has(td[colspan])');
-            
-            let visibleCount = 0;
-            
-            rows.each(function() {
-                const row = $(this);
-                const status = row.data('status');
-                const reason = row.data('reason');
-                const written = row.data('written').toString();
-                const text = row.text().toLowerCase();
-                
-                const statusMatch = statusValue === 'all' || status === statusValue;
-                const reasonMatch = reasonValue === 'all' || reason === reasonValue;
-                const writtenMatch = writtenValue === 'all' || written === writtenValue;
-                const textMatch = text.includes(searchValue);
-                
-                if (statusMatch && reasonMatch && writtenMatch && textMatch) {
-                    row.show();
-                    visibleCount++;
-                } else {
-                    row.hide();
-                }
-            });
-            
-            // Update the count
-            $('#requestCount').text(`${visibleCount} من ${rows.length} طلب`);
-        }
-        
-        function updateRequestCount() {
-            const totalRows = $('#requestsTable tbody tr').not(':has(td[colspan])').length;
-            if (totalRows > 0) {
-                $('#requestCount').text(`${totalRows} طلب إجمالي`);
-            } else {
-                $('#requestCount').text('');
-            }
-        }
-        
-        function updateStatsSummary() {
-            const rows = $('#requestsTable tbody tr').not(':has(td[colspan])');
-            
-            // Count requests by status
-            const newRequests = rows.filter('[data-status="New"]').length;
-            const processedRequests = rows.filter('[data-status="Processed"]').length;
-            const writtenRequests = rows.filter('[data-written="true"]').length;
-            
-            // Update the counts on the page
-            $('#newRequestsCount').text(newRequests);
-            $('#processedRequestsCount').text(processedRequests);
-            $('#writtenRequestsCount').text(writtenRequests);
-        }
-    });
-    
-    function updateTotalHajj() {
-    const totalHajj = document.getElementById('totalHajjInput').value;
-    
-    $.ajax({
-        url: '/update_total_hajj',
-        method: 'POST',
-        data: { total_hajj: totalHajj },
-        success: function(response) {
-            if (response.success) {
-                alert('تم تحديث إجمالي عدد الحجاج بنجاح');
-            } else {
-                alert('حدث خطأ أثناء تحديث إجمالي عدد الحجاج');
-            }
-        },
-        error: function() {
-            alert('حدث خطأ أثناء تحديث إجمالي عدد الحجاج');
-        }
-    });
-}
+        $('#requestCount').text(`${visibleCount} طلب`);
+    }
+});
 </script>
 {% endblock %}

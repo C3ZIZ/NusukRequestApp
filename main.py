@@ -159,23 +159,34 @@ def submit_request():
 
 @app.route('/update_status/<int:request_id>', methods=['POST'])
 def update_status(request_id):
-    """Update the status of a request (Processed/New)"""
+    """Update the status of a request"""
     try:
-        language = get_language()
         hajj_request = HajjCardRequest.query.get_or_404(request_id)
         new_status = request.form.get('status')
         
-        if new_status in ["Processed", "New"]:
-            hajj_request.status = new_status
-            hajj_request.updated_at = datetime.utcnow()
-            db.session.commit()
-            return jsonify({"success": True, "status": new_status})
-        else:
-            return jsonify({"success": False, "error": "Invalid status value"}), 400
+        # Validate status value against allowed values
+        allowed_statuses = ['found', 'request sent', 'card received', 'card delivered']
+        if new_status not in allowed_statuses:
+            return jsonify({
+                "success": False, 
+                "error": "قيمة الحالة غير صالحة"
+            }), 400
+            
+        hajj_request.status = new_status
+        hajj_request.updated_at = datetime.utcnow()
+        db.session.commit()
+        
+        return jsonify({
+            "success": True, 
+            "status": new_status
+        })
     except Exception as e:
         logger.error(f"Error updating status: {str(e)}")
         db.session.rollback()
-        return jsonify({"success": False, "error": str(e)}), 500
+        return jsonify({
+            "success": False, 
+            "error": "حدث خطأ في تحديث الحالة"
+        }), 500
 
 @app.route('/update_written/<int:request_id>', methods=['POST'])
 def update_written(request_id):
