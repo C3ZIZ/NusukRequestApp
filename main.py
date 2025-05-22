@@ -37,12 +37,48 @@ def employee():
     requests = HajjCardRequest.query.order_by(HajjCardRequest.created_at.desc()).all()
     return render_template('employee.html', requests=requests, language=language)
 
+# Add a new table to store application settings
+class AppSettings(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    key = db.Column(db.String(50), unique=True, nullable=False)
+    value = db.Column(db.String(255))
+
+@app.route('/update_total_hajj', methods=['POST'])
+def update_total_hajj():
+    """Update the total number of Hajj pilgrims"""
+    try:
+        total_hajj = request.form.get('total_hajj')
+        if not total_hajj:
+            return jsonify({"success": False, "error": "القيمة مطلوبة"}), 400
+
+        setting = AppSettings.query.filter_by(key='total_hajj').first()
+        if setting:
+            setting.value = total_hajj
+        else:
+            setting = AppSettings(key='total_hajj', value=total_hajj)
+            db.session.add(setting)
+
+        db.session.commit()
+        return jsonify({"success": True})
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"success": False, "error": str(e)}), 500
+
+def get_total_hajj():
+    """Get the total number of Hajj pilgrims from settings"""
+    setting = AppSettings.query.filter_by(key='total_hajj').first()
+    return int(setting.value) if setting else 0
+
 @app.route('/admin')
 def admin():
     """Admin page to manage requests"""
     language = get_language()
     requests = HajjCardRequest.query.order_by(HajjCardRequest.created_at.desc()).all()
-    return render_template('admin.html', requests=requests, language=language)
+    total_hajj = get_total_hajj()
+    return render_template('admin.html', 
+                         requests=requests, 
+                         language=language,
+                         total_hajj=total_hajj)
 
 @app.route('/submit_request', methods=['POST'])
 def submit_request():

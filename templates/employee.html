@@ -167,11 +167,20 @@
                             {% endif %}
                         </td>
                         <td>
-                            {% if req.status == "New" %}
-                                <span class="badge bg-info">لم تصل البطاقة</span>
-                            {% else %}
-                                <span class="badge bg-success">وصلت البطاقة</span>
-                            {% endif %}
+                            <span class="badge 
+                                {% if req.status == 'new_request' %}bg-secondary
+                                {% elif req.status == 'found' %}bg-success
+                                {% elif req.status == 'request sent' %}bg-info
+                                {% elif req.status == 'card received' %}bg-primary
+                                {% elif req.status == 'card delivered' %}bg-warning
+                                {% endif %}">
+                                {% if req.status == 'new_request' %}طلب جديد
+                                {% elif req.status == 'found' %}تم العثور عليها
+                                {% elif req.status == 'request sent' %}تم إرسال الطلب
+                                {% elif req.status == 'card received' %}تم استلام البطاقة
+                                {% elif req.status == 'card delivered' %}تم تسليم البطاقة
+                                {% endif %}
+                            </span>
                         </td>
                         <td>{{ req.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
                     </tr>

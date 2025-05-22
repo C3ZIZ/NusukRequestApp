@@ -12,10 +12,10 @@ class HajjCardRequest(db.Model):
     visa_number = db.Column(db.String(20), nullable=False)
     request_reason = db.Column(db.String(20), nullable=False)
     card_returned = db.Column(db.Boolean)
-    status = db.Column(db.String(20))  # CHECK (status IN ...)
+    status = db.Column(db.String(20), default="new_request")
     request_upload = db.Column(db.Boolean)
-    created_at = db.Column(db.DateTime)
-    updated_at = db.Column(db.DateTime)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
     def __repr__(self):
         return f"<HajjCardRequest {self.id} - {self.hajj_name}>"

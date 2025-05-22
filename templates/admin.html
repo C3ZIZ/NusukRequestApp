@@ -7,8 +7,20 @@
     <div class="col-12">
         <div class="card border-0 shadow">
             <div class="card-header bg-white d-flex justify-content-between align-items-center py-3">
-                <h2 class="h4 mb-0">إدارة طلبات بطاقة الحج</h2>
-                <span id="requestCount" class="badge bg-info"></span>
+                <div class="d-flex align-items-center">
+                    <h2 class="h4 mb-0 ml-3">إدارة طلبات بطاقة الحج</h2>
+                </div>
+                <div class="d-flex align-items-center">
+                    <div class="form-group mb-0 ms-3">
+                        <div class="input-group">
+                            <input type="number" id="totalHajjInput" class="form-control" placeholder="إجمالي عدد الحجاج" value="{{ total_hajj }}">
+                            <button class="btn btn-primary" onclick="updateTotalHajj()">
+                                <i class="fas fa-save ms-1"></i>حفظ
+                            </button>
+                        </div>
+                    </div>
+                    <span id="requestCount" class="badge bg-info ms-2"></span>
+                </div>
             </div>
             <div class="table-controls">
                 <div class="search-box">
@@ -417,5 +429,25 @@ function getArabicStatus(status) {
             $('#writtenRequestsCount').text(writtenRequests);
         }
     });
+    
+    function updateTotalHajj() {
+    const totalHajj = document.getElementById('totalHajjInput').value;
+    
+    $.ajax({
+        url: '/update_total_hajj',
+        method: 'POST',
+        data: { total_hajj: totalHajj },
+        success: function(response) {
+            if (response.success) {
+                alert('تم تحديث إجمالي عدد الحجاج بنجاح');
+            } else {
+                alert('حدث خطأ أثناء تحديث إجمالي عدد الحجاج');
+            }
+        },
+        error: function() {
+            alert('حدث خطأ أثناء تحديث إجمالي عدد الحجاج');
+        }
+    });
+}
 </script>
 {% endblock %}
