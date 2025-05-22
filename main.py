@@ -4,7 +4,7 @@ from datetime import datetime
 from flask import render_template, request, redirect, url_for, flash, jsonify, session
 
 from app import app, db
-from models import HajjCardRequest
+from models import HajjCardRequest, AppSettings
 
 # Configure logging
 logging.basicConfig(level=logging.DEBUG)
@@ -24,6 +24,15 @@ MESSAGES = {
 def get_language():
     return 'ar'
 
+def get_total_hajj():
+    """Get the total number of Hajj pilgrims from settings"""
+    try:
+        setting = AppSettings.query.filter_by(key='total_hajj').first()
+        return int(setting.value) if setting and setting.value else 0
+    except (ValueError, AttributeError) as e:
+        logger.error(f"Error getting total hajj: {str(e)}")
+        return 0
+
 @app.route('/')
 def index():
     """Landing page with links to employee and admin portals"""
@@ -37,12 +46,6 @@ def employee():
     requests = HajjCardRequest.query.order_by(HajjCardRequest.created_at.desc()).all()
     return render_template('employee.html', requests=requests, language=language)
 
-# Add a new table to store application settings
-class AppSettings(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    key = db.Column(db.String(50), unique=True, nullable=False)
-    value = db.Column(db.String(255))
-
 @app.route('/update_total_hajj', methods=['POST'])
 def update_total_hajj():
     """Update the total number of Hajj pilgrims"""
@@ -51,34 +54,39 @@ def update_total_hajj():
         if not total_hajj:
             return jsonify({"success": False, "error": "القيمة مطلوبة"}), 400
 
+        try:
+            total_hajj = int(total_hajj)
+        except ValueError:
+            return jsonify({"success": False, "error": "يجب أن تكون القيمة رقماً صحيحاً"}), 400
+
         setting = AppSettings.query.filter_by(key='total_hajj').first()
         if setting:
-            setting.value = total_hajj
+            setting.value = str(total_hajj)
         else:
-            setting = AppSettings(key='total_hajj', value=total_hajj)
+            setting = AppSettings(key='total_hajj', value=str(total_hajj))
             db.session.add(setting)
 
         db.session.commit()
         return jsonify({"success": True})
     except Exception as e:
+        logger.error(f"Error updating total hajj: {str(e)}")
         db.session.rollback()
-        return jsonify({"success": False, "error": str(e)}), 500
-
-def get_total_hajj():
-    """Get the total number of Hajj pilgrims from settings"""
-    setting = AppSettings.query.filter_by(key='total_hajj').first()
-    return int(setting.value) if setting else 0
+        return jsonify({"success": False, "error": "حدث خطأ في النظام"}), 500
 
 @app.route('/admin')
 def admin():
     """Admin page to manage requests"""
-    language = get_language()
-    requests = HajjCardRequest.query.order_by(HajjCardRequest.created_at.desc()).all()
-    total_hajj = get_total_hajj()
-    return render_template('admin.html', 
-                         requests=requests, 
-                         language=language,
-                         total_hajj=total_hajj)
+    try:
+        total_hajj = get_total_hajj()
+        requests = HajjCardRequest.query.order_by(HajjCardRequest.created_at.desc()).all()
+        return render_template('admin.html', 
+                             requests=requests, 
+                             language='ar',
+                             total_hajj=total_hajj)
+    except Exception as e:
+        logger.error(f"Error in admin page: {str(e)}")
+        flash("حدث خطأ في النظام", "error")
+        return redirect(url_for('index'))
 
 @app.route('/submit_request', methods=['POST'])
 def submit_request():
@@ -185,31 +193,33 @@ def update_written(request_id):
 @app.route('/statistics')
 def statistics():
     """Statistics page showing various metrics"""
-    total_hajj = db.session.query(db.func.count(HajjCardRequest.id)).scalar()
-    total_lost = db.session.query(db.func.count(HajjCardRequest.id)).filter(
-        HajjCardRequest.request_reason == "Lost Card"
-    ).scalar()
-    total_uploaded = db.session.query(db.func.count(HajjCardRequest.id)).filter(
-        HajjCardRequest.request_upload == True
-    ).scalar()
-    total_delivered = db.session.query(db.func.count(HajjCardRequest.id)).filter(
-        HajjCardRequest.status == "card delivered"
-    ).scalar()
-    total_received = db.session.query(db.func.count(HajjCardRequest.id)).filter(
-        HajjCardRequest.status == "card received"
-    ).scalar()
-    total_found = db.session.query(db.func.count(HajjCardRequest.id)).filter(
-        HajjCardRequest.status == "found"
-    ).scalar()
+    try:
+        total_hajj = get_total_hajj()
+        total_lost = db.session.query(db.func.count(HajjCardRequest.id)).filter(
+            HajjCardRequest.request_reason == "Lost Card"
+        ).scalar() or 0
+        total_uploaded = db.session.query(db.func.count(HajjCardRequest.id)).filter(
+            HajjCardRequest.request_upload == True
+        ).scalar() or 0
+        total_delivered = db.session.query(db.func.count(HajjCardRequest.id)).filter(
+            HajjCardRequest.status == "card delivered"
+        ).scalar() or 0
+        total_received = db.session.query(db.func.count(HajjCardRequest.id)).filter(
+            HajjCardRequest.status == "card received"
+        ).scalar() or 0
+        total_found = db.session.query(db.func.count(HajjCardRequest.id)).filter(
+            HajjCardRequest.status == "found"
+        ).scalar() or 0
 
-    return render_template('statistics.html',
-                         language='ar',
-                         total_hajj=total_hajj,
-                         total_lost=total_lost,
-                         total_uploaded=total_uploaded,
-                         total_delivered=total_delivered,
-                         total_received=total_received,
-                         total_found=total_found)
-
-if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000, debug=True)
+        return render_template('statistics.html',
+                            language='ar',
+                            total_hajj=total_hajj,
+                            total_lost=total_lost,
+                            total_uploaded=total_uploaded,
+                            total_delivered=total_delivered,
+                            total_received=total_received,
+                            total_found=total_found)
+    except Exception as e:
+        logger.error(f"Error in statistics page: {str(e)}")
+        flash("حدث خطأ في النظام", "error")
+        return redirect(url_for('index'))

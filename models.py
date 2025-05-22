@@ -2,6 +2,13 @@ from datetime import datetime
 from app import db
 
 
+class AppSettings(db.Model):
+    __tablename__ = 'app_settings'
+    id = db.Column(db.Integer, primary_key=True)
+    key = db.Column(db.String(50), unique=True, nullable=False)
+    value = db.Column(db.String(255))
+
+
 class HajjCardRequest(db.Model):
     __tablename__ = 'hajj_card_request_log'
     id = db.Column(db.Integer, primary_key=True)
