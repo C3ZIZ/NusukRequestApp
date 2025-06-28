@@ -108,6 +108,14 @@ header {
     box-shadow: 0 2px 5px rgba(0,0,0,0.05);
 }
 
+/* Fix statistics button alignment in navbar for RTL */
+html[dir="rtl"] header nav {
+    justify-content: flex-start !important;
+}
+html[dir="ltr"] header nav {
+    justify-content: flex-end !important;
+}
+
 /* Card Styling */
 .card {
     border-radius: 8px;
