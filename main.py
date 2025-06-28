@@ -141,10 +141,10 @@ def submit_request():
         return redirect(url_for('employee'))
     
     except Exception as e:
-        logger.error(f"Error submitting request: {str(e)}")
-        # Define language in case it's not defined in the exception path
+        logger.error(f"Error submitting request: {str(e)}", exc_info=True)
         language = get_language()
-        flash(MESSAGES[language]['request_error'], 'error')
+        # Show error message and code to user for debugging
+        flash(f"{MESSAGES[language]['request_error']}\nError: {str(e)}", 'error')
         return redirect(url_for('employee'))
 
 @app.route('/update_status/<int:request_id>', methods=['POST'])
