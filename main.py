@@ -41,6 +41,9 @@ def parse_datetime_fields(requests):
                     req[field] = datetime.fromisoformat(value.replace('Z', '+00:00'))
                 except Exception:
                     pass
+        # Ensure status is always present for UI
+        if not req.get('status'):
+            req['status'] = 'New'
     return requests
 
 @app.route('/')
@@ -146,6 +149,7 @@ def submit_request():
             'visa_number': visa_number,
             'request_reason': request_reason,
             'card_returned': card_returned,
+            'status': 'New',  # Ensure status is set
             'created_at': now,
             'updated_at': now
         }
