@@ -25,7 +25,7 @@
             <div class="table-controls">
                 <div class="search-box">
                     <i class="fas fa-search"></i>
-                    <input type="text" id="searchInput" class="form-control search-input" placeholder="البحث بالاسم، رقم الجواز...">
+                    <input type="text" id="searchInput" class="form-control search-input" placeholder="البحث بالاسم، رقم الجواز، رقم التأشيرة...">
                 </div>
                 <select id="statusFilter" class="form-select filter-dropdown">
                     <option value="all">جميع الحالات</option>
@@ -33,16 +33,6 @@
                     <option value="request sent">تم إرسال الطلب</option>
                     <option value="card received">تم استلام البطاقة</option>
                     <option value="card delivered">تم تسليم البطاقة</option>
-                </select>
-                <select id="reasonFilter" class="form-select filter-dropdown">
-                    <option value="all">جميع الأسباب</option>
-                    <option value="Lost Card">بطاقة مفقودة</option>
-                    <option value="Damaged Card">بطاقة تالفة</option>
-                </select>
-                <select id="writtenFilter" class="form-select filter-dropdown">
-                    <option value="all">جميع حالات الطلب</option>
-                    <option value="true">تم رفع الطلب</option>
-                    <option value="false">لم يرفع الطلب</option>
                 </select>
             </div>
             <div class="card-body p-0">
@@ -216,18 +206,13 @@ function getArabicStatus(status) {
     return statusMap[status] || status;
 }
 
-// Improved sorting and filtering system
+// Improved sorting and filtering system (status + search only)
 $(document).ready(function() {
-    // Count and display total requests
     updateRequestCount();
-
     const searchInput = document.getElementById('searchInput');
     const statusFilter = document.getElementById('statusFilter');
-    const reasonFilter = document.getElementById('reasonFilter');
-    const writtenFilter = document.getElementById('writtenFilter');
     const table = document.getElementById('requestsTable');
     let currentSort = { col: null, asc: true };
-
     // --- Sorting ---
     $(table).find('th').each(function(idx) {
         $(this).off('click').on('click', function() {
@@ -238,34 +223,27 @@ $(document).ready(function() {
                 currentSort.asc = true;
             }
             sortTable(table, idx, currentSort.asc);
-            filterTable(); // re-filter after sort
+            filterTable();
         });
     });
-
     // --- Filtering ---
     searchInput.addEventListener('input', filterTable);
     statusFilter.addEventListener('change', filterTable);
-    reasonFilter.addEventListener('change', filterTable);
-    writtenFilter.addEventListener('change', filterTable);
-
     function filterTable() {
         const searchValue = searchInput.value.toLowerCase();
         const statusValue = statusFilter.value;
-        const reasonValue = reasonFilter.value;
-        const writtenValue = writtenFilter.value;
         const rows = $('#requestsTable tbody tr').not(':has(td[colspan])');
         let visibleCount = 0;
         rows.each(function() {
             const row = $(this);
             const status = row.data('status');
-            const reason = row.data('reason');
-            const text = row.text().toLowerCase();
-            const written = row.find('select.status-select').length ? (row.find('select.status-select').val() === 'request sent' || row.find('select.status-select').val() === 'card received' || row.find('select.status-select').val() === 'card delivered') : null;
+            // Only search in name, passport, visa columns
+            const name = row.find('td').eq(2).text().toLowerCase();
+            const passport = row.find('td').eq(3).text().toLowerCase();
+            const visa = row.find('td').eq(4).text().toLowerCase();
             const statusMatch = statusValue === 'all' || status === statusValue;
-            const reasonMatch = reasonValue === 'all' || reason === reasonValue;
-            const writtenMatch = writtenValue === 'all' || (writtenValue === 'true' && written) || (writtenValue === 'false' && written === false);
-            const textMatch = text.includes(searchValue);
-            if (statusMatch && reasonMatch && writtenMatch && textMatch) {
+            const textMatch = name.includes(searchValue) || passport.includes(searchValue) || visa.includes(searchValue);
+            if (statusMatch && (searchValue === '' || textMatch)) {
                 row.show();
                 visibleCount++;
             } else {
@@ -274,8 +252,6 @@ $(document).ready(function() {
         });
         $('#requestCount').text(`${visibleCount} طلب`);
     }
-
-    // --- Initial sort/filter ---
     filterTable();
 });
 

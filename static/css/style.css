@@ -108,6 +108,41 @@ header {
     box-shadow: 0 2px 5px rgba(0,0,0,0.05);
 }
 
+/* Navbar/header logo and statistics button alignment */
+header .logo-link {
+    order: 2;
+}
+header .statistics-navbar-btn {
+    order: 1;
+}
+html[dir="rtl"] header .logo-link {
+    margin-right: 0;
+    margin-left: auto;
+}
+html[dir="rtl"] header .statistics-navbar-btn {
+    margin-left: 0;
+    margin-right: auto;
+}
+html[dir="ltr"] header .logo-link {
+    margin-left: 0;
+    margin-right: auto;
+}
+html[dir="ltr"] header .statistics-navbar-btn {
+    margin-right: 0;
+    margin-left: auto;
+}
+@media (max-width: 768px) {
+    header .logo-link, header .statistics-navbar-btn {
+        width: 100%;
+        justify-content: center;
+        margin: 0 0 10px 0;
+    }
+    header .d-flex {
+        flex-direction: column !important;
+        align-items: stretch !important;
+    }
+}
+
 /* Fix statistics button alignment in navbar for RTL */
 html[dir="rtl"] header nav {
     justify-content: flex-start !important;
