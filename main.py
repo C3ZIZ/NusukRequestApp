@@ -123,6 +123,7 @@ def submit_request():
             return redirect(url_for('employee'))
         
         # Create and save new request
+        now = datetime.utcnow().isoformat()
         new_request = {
             'employee_name': employee_name,
             'employee_number': employee_number,
@@ -131,8 +132,8 @@ def submit_request():
             'visa_number': visa_number,
             'request_reason': request_reason,
             'card_returned': card_returned,
-            'created_at': datetime.utcnow(),
-            'updated_at': datetime.utcnow()
+            'created_at': now,
+            'updated_at': now
         }
         
         supabase.table('card_requests').insert(new_request).execute()
