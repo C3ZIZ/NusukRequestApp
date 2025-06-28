@@ -148,71 +148,64 @@
             </div>
         </div>
     </div>
-    <div class="col-md-6">
-        <div class="card border-0 shadow-sm">
-            <div class="card-header bg-white py-3">
-                <h3 class="h5 mb-0">ملخص الحالة</h3>
-            </div>
-            <div class="card-body">
-                <div class="row text-center">
-                    <div class="col-4">
-                        <div class="p-3 border rounded mb-2">
-                            <h3 class="h2 mb-0" id="newRequestsCount">0</h3>
-                        </div>
-                        <div class="text-muted">طلبات جديدة</div>
-                    </div>
-                    <div class="col-4">
-                        <div class="p-3 border rounded mb-2">
-                            <h3 class="h2 mb-0" id="processedRequestsCount">0</h3>
-                        </div>
-                        <div class="text-muted">تمت المعالجة</div>
-                    </div>
-                    <div class="col-4">
-                        <div class="p-3 border rounded mb-2">
-                            <h3 class="h2 mb-0" id="writtenRequestsCount">0</h3>
-                        </div>
-                        <div class="text-muted">تمت الكتابة</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
 </div>
 {% endblock %}
 
 {% block extra_js %}
 <script>
+function showNotification(message, type = 'success') {
+    $("#status-alert").remove();
+    const icon = type === 'success' ? '✔️' : '❌';
+    const alertClass = type === 'success' ? 'alert-success' : 'alert-danger';
+    const alertHtml = `
+        <div id="status-alert" class="alert ${alertClass} alert-dismissible fade show custom-alert" role="alert" style="max-width: 400px; margin: 20px auto; left: 0; right: 0; z-index: 1055; position: fixed; top: 20px; text-align: center; box-shadow: 0 2px 12px rgba(0,0,0,0.12);">
+            <span style="font-size:1.2em;vertical-align:middle;">${icon}</span>
+            <span style="margin-right:8px;vertical-align:middle;">${message}</span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close" style="float:left;"></button>
+        </div>
+    `;
+    $("body").prepend(alertHtml);
+    setTimeout(function() { $("#status-alert").alert('close'); }, 3000);
+}
+
 function updateStatus(selectElement) {
     const requestId = selectElement.dataset.requestId;
     const newStatus = selectElement.value;
-    
     $.ajax({
         url: `/update_status/${requestId}`,
         method: 'POST',
         data: { status: newStatus },
         success: function(response) {
             if (response.success) {
-                // Remove any existing alert
-                $("#status-alert").remove();
-                // Show success message at the top of the page
-                const successAlert = `<div id="status-alert" class="alert alert-success alert-dismissible fade show position-fixed w-100" style="top:0;left:0;z-index:9999;text-align:center;" role="alert">
-                    تم تحديث الحالة بنجاح
-                </div>`;
-                $("body").prepend(successAlert);
-                setTimeout(function() { $("#status-alert").alert('close'); }, 10000);
-                
+                showNotification('تم تحديث الحالة بنجاح', 'success');
                 // Update status badge styling
                 const row = $(selectElement).closest('tr');
                 row.attr('data-status', newStatus);
             }
         },
         error: function(error) {
-            $("#status-alert").remove();
-            const errorAlert = `<div id="status-alert" class="alert alert-danger alert-dismissible fade show position-fixed w-100" style="top:0;left:0;z-index:9999;text-align:center;" role="alert">
-                حدث خطأ أثناء تحديث الحالة
-            </div>`;
-            $("body").prepend(errorAlert);
-            setTimeout(function() { $("#status-alert").alert('close'); }, 10000);
+            showNotification('حدث خطأ أثناء تحديث الحالة', 'danger');
+        }
+    });
+}
+
+function updateTotalHajj() {
+    var totalHajj = $("#totalHajjInput").val();
+    $.ajax({
+        url: '/update_total_hajj',
+        method: 'POST',
+        data: { total_hajj: totalHajj },
+        success: function(response) {
+            if (response.success) {
+                showNotification('تم تحديث إجمالي عدد الحجاج بنجاح', 'success');
+                // Optionally update the input value to reflect saved value
+                $("#totalHajjInput").val(totalHajj);
+            } else {
+                showNotification(response.error || 'حدث خطأ', 'danger');
+            }
+        },
+        error: function() {
+            showNotification('حدث خطأ أثناء تحديث العدد', 'danger');
         }
     });
 }
