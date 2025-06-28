@@ -59,7 +59,6 @@
                                 <th onclick="sortTable(document.getElementById('requestsTable'), 6)">إرجاع البطاقة <i class="fas fa-sort ms-1"></i></th>
                                 <th onclick="sortTable(document.getElementById('requestsTable'), 7)">الحالة <i class="fas fa-sort ms-1"></i></th>
                                 <th onclick="sortTable(document.getElementById('requestsTable'), 8)">تاريخ الإنشاء <i class="fas fa-sort ms-1"></i></th>
-                                <th>الإجراءات</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -109,13 +108,10 @@
                                         -
                                     {% endif %}
                                 </td>
-                                <td>
-                                    <!-- الإجراءات هنا -->
-                                </td>
                             </tr>
                             {% else %}
                             <tr>
-                                <td colspan="10" class="text-center py-4">
+                                <td colspan="9" class="text-center py-4">
                                     <div class="empty-state">
                                         <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
                                         <p class="mb-0">لم يتم العثور على طلبات في النظام.</p>
