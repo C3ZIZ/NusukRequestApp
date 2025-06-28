@@ -353,6 +353,14 @@ canvas#requestsChart {
     width: 100%;
 }
 
+/* --- Fix statistics button position for RTL --- */
+html[dir="rtl"] .statistics-btn-container {
+    justify-content: flex-start !important;
+}
+html[dir="ltr"] .statistics-btn-container {
+    justify-content: flex-end !important;
+}
+
 /* Responsive Adjustments */
 @media (max-width: 768px) {
     .card-img-top {
