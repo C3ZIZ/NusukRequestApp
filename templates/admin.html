@@ -58,14 +58,13 @@
                                 <th onclick="sortTable(document.getElementById('requestsTable'), 5)">السبب <i class="fas fa-sort ms-1"></i></th>
                                 <th onclick="sortTable(document.getElementById('requestsTable'), 6)">إرجاع البطاقة <i class="fas fa-sort ms-1"></i></th>
                                 <th onclick="sortTable(document.getElementById('requestsTable'), 7)">الحالة <i class="fas fa-sort ms-1"></i></th>
-                                <th onclick="sortTable(document.getElementById('requestsTable'), 8)">الكتابة <i class="fas fa-sort ms-1"></i></th>
-                                <th onclick="sortTable(document.getElementById('requestsTable'), 9)">تاريخ الإنشاء <i class="fas fa-sort ms-1"></i></th>
+                                <th onclick="sortTable(document.getElementById('requestsTable'), 8)">تاريخ الإنشاء <i class="fas fa-sort ms-1"></i></th>
                                 <th>الإجراءات</th>
                             </tr>
                         </thead>
                         <tbody>
                             {% for req in requests %}
-                            <tr data-status="{{ req.status }}" data-reason="{{ req.request_reason }}" data-written="{{ req.is_written|lower }}">
+                            <tr data-status="{{ req.status }}" data-reason="{{ req.request_reason }}">
                                 <td>{{ req.id }}</td>
                                 <td>
                                     <div>{{ req.employee_name }}</div>
@@ -104,23 +103,19 @@
                                     </select>
                                 </td>
                                 <td>
-                                    {% if req.request_upload %}
-                                        <span class="badge bg-success">نعم</span>
-                                    {% else %}
-                                        <span class="badge bg-secondary">لا</span>
-                                    {% endif %}
-                                </td>
-                                <td>
                                     {% if req.created_at %}
                                         {{ req.created_at.strftime('%Y-%m-%d %H:%M') }}
                                     {% else %}
                                         -
                                     {% endif %}
                                 </td>
+                                <td>
+                                    <!-- الإجراءات هنا -->
+                                </td>
                             </tr>
                             {% else %}
                             <tr>
-                                <td colspan="11" class="text-center py-4">
+                                <td colspan="10" class="text-center py-4">
                                     <div class="empty-state">
                                         <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
                                         <p class="mb-0">لم يتم العثور على طلبات في النظام.</p>
@@ -197,12 +192,14 @@ function updateStatus(selectElement) {
         data: { status: newStatus },
         success: function(response) {
             if (response.success) {
-                // Show success message
-                const successAlert = `<div class="alert alert-success alert-dismissible fade show" role="alert">
+                // Remove any existing alert
+                $("#status-alert").remove();
+                // Show success message at the top of the page
+                const successAlert = `<div id="status-alert" class="alert alert-success alert-dismissible fade show position-fixed w-100" style="top:0;left:0;z-index:9999;text-align:center;" role="alert">
                     تم تحديث الحالة بنجاح
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>`;
-                $('.container').prepend(successAlert);
+                $("body").prepend(successAlert);
+                setTimeout(function() { $("#status-alert").alert('close'); }, 10000);
                 
                 // Update status badge styling
                 const row = $(selectElement).closest('tr');
@@ -210,12 +207,12 @@ function updateStatus(selectElement) {
             }
         },
         error: function(error) {
-            // Show error message
-            const errorAlert = `<div class="alert alert-danger alert-dismissible fade show" role="alert">
+            $("#status-alert").remove();
+            const errorAlert = `<div id="status-alert" class="alert alert-danger alert-dismissible fade show position-fixed w-100" style="top:0;left:0;z-index:9999;text-align:center;" role="alert">
                 حدث خطأ أثناء تحديث الحالة
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>`;
-            $('.container').prepend(errorAlert);
+            $("body").prepend(errorAlert);
+            setTimeout(function() { $("#status-alert").alert('close'); }, 10000);
         }
     });
 }
