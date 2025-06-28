@@ -2,9 +2,7 @@ import logging
 import re
 from datetime import datetime
 from flask import render_template, request, redirect, url_for, flash, jsonify, session
-
-from app import app, db
-from models import CardRequest, AppSettings
+from app import app, supabase
 
 # Configure logging
 logging.basicConfig(level=logging.DEBUG)
@@ -27,9 +25,9 @@ def get_language():
 def get_total_hajj():
     """Get the total number of Hajj pilgrims from settings"""
     try:
-        setting = AppSettings.query.filter_by(key='total_hajj').first()
-        return int(setting.value) if setting and setting.value else 0
-    except (ValueError, AttributeError) as e:
+        setting = supabase.table('app_settings').select('value').eq('key', 'total_hajj').single()
+        return int(setting['value']) if setting and setting['value'] else 0
+    except (ValueError, TypeError) as e:
         logger.error(f"Error getting total hajj: {str(e)}")
         return 0
 
@@ -43,8 +41,8 @@ def index():
 def employee():
     """Employee page to view and submit requests"""
     try:
-        requests = CardRequest.query.order_by(CardRequest.created_at.desc()).all()
-        return render_template('employee.html', requests=requests, language='ar')
+        requests = supabase.table('card_requests').select('*').order('created_at', desc=True).execute()
+        return render_template('employee.html', requests=requests.data, language='ar')
     except Exception as e:
         logger.error(f"Error in employee page: {str(e)}")
         flash("حدث خطأ في النظام", "error")
@@ -63,28 +61,25 @@ def update_total_hajj():
         except ValueError:
             return jsonify({"success": False, "error": "يجب أن تكون القيمة رقماً صحيحاً"}), 400
 
-        setting = AppSettings.query.filter_by(key='total_hajj').first()
+        setting = supabase.table('app_settings').select('key').eq('key', 'total_hajj').single()
         if setting:
-            setting.value = str(total_hajj)
+            supabase.table('app_settings').update({'value': str(total_hajj)}).eq('key', 'total_hajj').execute()
         else:
-            setting = AppSettings(key='total_hajj', value=str(total_hajj))
-            db.session.add(setting)
+            supabase.table('app_settings').insert({'key': 'total_hajj', 'value': str(total_hajj)}).execute()
 
-        db.session.commit()
         return jsonify({"success": True})
     except Exception as e:
         logger.error(f"Error updating total hajj: {str(e)}")
-        db.session.rollback()
         return jsonify({"success": False, "error": "حدث خطأ في النظام"}), 500
 
 @app.route('/admin')
 def admin():
     """Admin page to manage requests"""
     try:
-        requests = CardRequest.query.order_by(CardRequest.created_at.desc()).all()
+        requests = supabase.table('card_requests').select('*').order('created_at', desc=True).execute()
         total_hajj = get_total_hajj()
         return render_template('admin.html', 
-                            requests=requests, 
+                            requests=requests.data, 
                             language='ar',
                             total_hajj=total_hajj)
     except Exception as e:
@@ -122,36 +117,32 @@ def submit_request():
             card_returned = 'card_returned' in request.form
 
         # Check for duplicate active requests
-        existing_request = CardRequest.query.filter_by(
-            passport_number=passport_number, 
-            status="New"
-        ).first()
+        existing_request = supabase.table('card_requests').select('passport_number').eq('passport_number', passport_number).eq('status', 'New').single()
         
         if existing_request:
             flash(MESSAGES[language]['duplicate_request'].format(passport=passport_number), 'error')
             return redirect(url_for('employee'))
         
         # Create and save new request
-        new_request = CardRequest()
-        new_request.employee_name = employee_name
-        new_request.employee_number = employee_number
-        new_request.hajj_name = hajj_name
-        new_request.passport_number = passport_number
-        new_request.visa_number = visa_number
-        new_request.request_reason = request_reason
-        new_request.card_returned = card_returned
-        new_request.created_at = datetime.utcnow()
-        new_request.updated_at = datetime.utcnow()
+        new_request = {
+            'employee_name': employee_name,
+            'employee_number': employee_number,
+            'hajj_name': hajj_name,
+            'passport_number': passport_number,
+            'visa_number': visa_number,
+            'request_reason': request_reason,
+            'card_returned': card_returned,
+            'created_at': datetime.utcnow(),
+            'updated_at': datetime.utcnow()
+        }
         
-        db.session.add(new_request)
-        db.session.commit()
+        supabase.table('card_requests').insert(new_request).execute()
         
         flash(MESSAGES[language]['request_submitted'], 'success')
         return redirect(url_for('employee'))
     
     except Exception as e:
         logger.error(f"Error submitting request: {str(e)}")
-        db.session.rollback()
         # Define language in case it's not defined in the exception path
         language = get_language()
         flash(MESSAGES[language]['request_error'], 'error')
@@ -161,7 +152,7 @@ def submit_request():
 def update_status(request_id):
     """Update the status of a request"""
     try:
-        hajj_request = CardRequest.query.get_or_404(request_id)
+        hajj_request = supabase.table('card_requests').select('*').eq('id', request_id).single()
         new_status = request.form.get('status')
         
         # Validate status value against allowed values
@@ -172,9 +163,7 @@ def update_status(request_id):
                 "error": "قيمة الحالة غير صالحة"
             }), 400
             
-        hajj_request.status = new_status
-        hajj_request.updated_at = datetime.utcnow()
-        db.session.commit()
+        supabase.table('card_requests').update({'status': new_status, 'updated_at': datetime.utcnow()}).eq('id', request_id).execute()
         
         return jsonify({
             "success": True, 
@@ -182,7 +171,6 @@ def update_status(request_id):
         })
     except Exception as e:
         logger.error(f"Error updating status: {str(e)}")
-        db.session.rollback()
         return jsonify({
             "success": False, 
             "error": "حدث خطأ في تحديث الحالة"
@@ -193,17 +181,15 @@ def update_written(request_id):
     """Update the is_written flag of a request"""
     try:
         language = get_language()
-        hajj_request = CardRequest.query.get_or_404(request_id)
+        hajj_request = supabase.table('card_requests').select('*').eq('id', request_id).single()
         is_written = request.form.get('is_written', 'false')
         
         # Convert string to boolean
-        hajj_request.is_written = (is_written.lower() == 'true')
-        hajj_request.updated_at = datetime.utcnow()
-        db.session.commit()
-        return jsonify({"success": True, "is_written": hajj_request.is_written})
+        is_written_bool = (is_written.lower() == 'true')
+        supabase.table('card_requests').update({'is_written': is_written_bool, 'updated_at': datetime.utcnow()}).eq('id', request_id).execute()
+        return jsonify({"success": True, "is_written": is_written_bool})
     except Exception as e:
         logger.error(f"Error updating written status: {str(e)}")
-        db.session.rollback()
         return jsonify({"success": False, "error": str(e)}), 500
 
 @app.route('/statistics')
@@ -211,21 +197,11 @@ def statistics():
     """Statistics page showing various metrics"""
     try:
         total_hajj = get_total_hajj()
-        total_lost = db.session.query(db.func.count(CardRequest.id)).filter(
-            CardRequest.request_reason == "Lost Card"
-        ).scalar() or 0
-        total_uploaded = db.session.query(db.func.count(CardRequest.id)).filter(
-            CardRequest.request_upload == True
-        ).scalar() or 0
-        total_delivered = db.session.query(db.func.count(CardRequest.id)).filter(
-            CardRequest.status == "card delivered"
-        ).scalar() or 0
-        total_received = db.session.query(db.func.count(CardRequest.id)).filter(
-            CardRequest.status == "card received"
-        ).scalar() or 0
-        total_found = db.session.query(db.func.count(CardRequest.id)).filter(
-            CardRequest.status == "found"
-        ).scalar() or 0
+        total_lost = supabase.table('card_requests').select('id').eq('request_reason', "Lost Card").execute().count()
+        total_uploaded = supabase.table('card_requests').select('id').eq('request_upload', True).execute().count()
+        total_delivered = supabase.table('card_requests').select('id').eq('status', "card delivered").execute().count()
+        total_received = supabase.table('card_requests').select('id').eq('status', "card received").execute().count()
+        total_found = supabase.table('card_requests').select('id').eq('status', "found").execute().count()
 
         return render_template('statistics.html',
                             language='ar',
