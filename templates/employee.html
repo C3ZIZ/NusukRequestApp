@@ -1,16 +1,16 @@
 {% extends 'base.html' %}
 
 {% block title %}
-بوابة الموظفين - طلبات بطاقة الحج
+بوابة الموظفين - بديل (بديل) التقارير
 {% endblock %}
 
 {% block content %}
 <div class="row mb-4">
-    <div class="col-md-6">
+    <div class="col-12">
         <div class="card border-0 shadow-sm h-100">
             <div class="card-header bg-white py-3">
                 <h2 class="card-title h4 mb-0">
-                    تقديم طلب بطاقة حج جديد
+                    تقديم بلاغ جديد في بديل (بطاقة نسك مفقودة أو تالفة)
                 </h2>
             </div>
             <div class="card-body">
@@ -27,7 +27,7 @@
                             <label for="employee_number" class="form-label">رقم الموظف</label>
                             <input type="text" class="form-control" id="employee_number" name="employee_number" placeholder="05XXXXXXXX" pattern="05[0-9]{8}" required>
                             <div class="invalid-feedback">
-                                يجب أن يكون 10 أرقام ويبدأ بـ "05"
+                                يجب أن يتكون من 10 أرقام ويبدأ بـ "05"
                             </div>
                         </div>
                         <div class="col-md-6">
@@ -38,10 +38,10 @@
                             </div>
                         </div>
                         <div class="col-md-6">
-                            <label for="passport_number" class="form-label">رقم جواز السفر</label>
+                            <label for="passport_number" class="form-label">رقم الجواز</label>
                             <input type="text" class="form-control" id="passport_number" name="passport_number" required>
                             <div class="invalid-feedback">
-                                يرجى إدخال رقم جواز السفر
+                                يرجى إدخال رقم الجواز
                             </div>
                         </div>
                         <div class="col-md-6">
@@ -72,29 +72,11 @@
                         </div>
                         <div class="col-12">
                             <button type="submit" class="btn btn-primary w-100">
-                                تقديم الطلب
+                                تقديم البلاغ
                             </button>
                         </div>
                     </div>
                 </form>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-6">
-        <div class="card border-0 shadow-sm h-100">
-            <div class="card-header bg-white py-3">
-                <h2 class="card-title h4 mb-0">
-                    عن خدمة إدارة بطاقة نسك
-                </h2>
-            </div>
-            <div class="card-body">
-                <p>هذه الخدمة وجدت لتسهيل إدارة طلبات بدل الفاقد والتالف لبطائق نسك</p>
-                <p>يرجى التأكد من دقة جميع المعلومات قبل التقديم. لن يتم قبول طلبات مكررة لنفس جواز السفر إذا كان هناك طلب قيد المعالجة بالفعل.</p>
-                <p>للتواصل: 00966538623767</p>
-                <div class="alert alert-info">
-                    <i class="fas fa-info-circle ms-2"></i>
-                    للحصول على أي مساعدة، يرجى الاتصال بفريق الدعم.
-                </div>
             </div>
         </div>
     </div>
@@ -103,19 +85,19 @@
 <div class="card border-0 shadow-sm">
     <div class="card-header bg-white d-flex justify-content-between align-items-center py-3">
         <h2 class="mb-0 h4">
-            جميع طلبات بطاقة الحج
+            جميع بلاغات بديل
         </h2>
         <span id="requestCount" class="badge bg-info"></span>
     </div>
     <div class="table-controls">
         <div class="search-box">
             <i class="fas fa-search"></i>
-            <input type="text" id="searchInput" class="form-control search-input" placeholder="بحث في الطلبات...">
+            <input type="text" id="searchInput" class="form-control search-input" placeholder="ابحث في البلاغات...">
         </div>
         <select id="statusFilter" class="form-select filter-dropdown">
             <option value="all">جميع الحالات</option>
             <option value="New">جديد</option>
-            <option value="Processed">تمت المعالجة</option>
+            <option value="Processed">تم المعالجة</option>
         </select>
         <select id="reasonFilter" class="form-select filter-dropdown">
             <option value="all">جميع الأسباب</option>
@@ -128,12 +110,12 @@
             <table class="table table-hover align-middle mb-0" id="requestsTable">
                 <thead class="table-light">
                     <tr>
-                        <th onclick="sortTable(document.getElementById('requestsTable'), 0)">المعرف <i class="fas fa-sort ms-1"></i></th>
+                        <th onclick="sortTable(document.getElementById('requestsTable'), 0)">ID <i class="fas fa-sort ms-1"></i></th>
                         <th onclick="sortTable(document.getElementById('requestsTable'), 1)">اسم الموظف <i class="fas fa-sort ms-1"></i></th>
                         <th onclick="sortTable(document.getElementById('requestsTable'), 2)">اسم الحاج <i class="fas fa-sort ms-1"></i></th>
-                        <th onclick="sortTable(document.getElementById('requestsTable'), 3)">رقم جواز السفر <i class="fas fa-sort ms-1"></i></th>
+                        <th onclick="sortTable(document.getElementById('requestsTable'), 3)">رقم الجواز <i class="fas fa-sort ms-1"></i></th>
                         <th onclick="sortTable(document.getElementById('requestsTable'), 4)">سبب الطلب <i class="fas fa-sort ms-1"></i></th>
-                        <th onclick="sortTable(document.getElementById('requestsTable'), 5)">إرجاع البطاقة <i class="fas fa-sort ms-1"></i></th>
+                        <th onclick="sortTable(document.getElementById('requestsTable'), 5)">تم إرجاع البطاقة <i class="fas fa-sort ms-1"></i></th>
                         <th onclick="sortTable(document.getElementById('requestsTable'), 6)">الحالة <i class="fas fa-sort ms-1"></i></th>
                         <th onclick="sortTable(document.getElementById('requestsTable'), 7)">تاريخ الإنشاء <i class="fas fa-sort ms-1"></i></th>
                     </tr>
@@ -194,7 +176,7 @@
                     <tr>
                         <td colspan="8" class="text-center py-4">
                             <p class="text-muted mb-0">
-                            لم يتم العثور على طلبات. قم بتقديم طلب جديد للبدء.
+                            لا توجد طلبات. قدم بلاغًا جديدًا للبدء.
                             </p>
                         </td>
                     </tr>
@@ -290,7 +272,7 @@
             if (totalRows === 0) {
                 requestCountBadge.textContent = '';
             } else {
-                requestCountBadge.textContent = `${count} من ${totalRows} طلب`;
+                requestCountBadge.textContent = `${count} من ${totalRows} تقارير`;
             }
         }
     });

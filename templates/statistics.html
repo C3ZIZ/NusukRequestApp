@@ -1,91 +1,37 @@
 {% extends 'base.html' %}
 
-{% block title %}إحصائيات بطاقات الحج{% endblock %}
+{% block title %}بديل - الإحصائيات{% endblock %}
 
 {% block content %}
 <div class="row mb-4">
     <div class="col-12">
         <div class="card border-0 shadow-sm">
             <div class="card-header bg-white py-3">
-                <h2 class="h4 mb-0">إحصائيات طلبات بطاقات الحج</h2>
+                <h2 class="h4 mb-0">إحصائيات نظام بديل</h2>
             </div>
             <div class="card-body">
                 <div class="row g-4">
-                    <!-- إجمالي الحجاج -->
-                    <div class="col-md-4 col-lg-3">
+                    <!-- إجمالي البلاغات -->
+                    <div class="col-md-4">
                         <div class="stats-card bg-primary text-white rounded p-3">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <div>
-                                    <h6 class="mb-0">إجمالي الحجاج</h6>
-                                    <h2 class="mt-2 mb-0">{{ total_hajj }}</h2>
-                                </div>
-                                <i class="fas fa-users fa-2x opacity-50"></i>
-                            </div>
+                            <h6 class="mb-0">إجمالي البلاغات</h6>
+                            <h2 class="mt-2 mb-0">{{ total_hajj }}</h2>
                         </div>
                     </div>
                     
-                    <!-- البطاقات المفقودة -->
-                    <div class="col-md-4 col-lg-3">
+                    <!-- بطاقات نسك المفقودة -->
+                    <div class="col-md-4">
                         <div class="stats-card bg-danger text-white rounded p-3">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <div>
-                                    <h6 class="mb-0">البطاقات المفقودة</h6>
-                                    <h2 class="mt-2 mb-0">{{ total_lost }}</h2>
-                                </div>
-                                <i class="fas fa-search fa-2x opacity-50"></i>
-                            </div>
+                            <h6 class="mb-0">بطاقات نسك المفقودة</h6>
+                            <h2 class="mt-2 mb-0">{{ total_lost }}</h2>
                         </div>
                     </div>
                     
-                    <!-- طلبات تم رفعها -->
-                    <div class="col-md-4 col-lg-3">
+                    <!-- بطاقات نسك التالفة -->
+                    <div class="col-md-4">
                         <div class="stats-card bg-info text-white rounded p-3">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <div>
-                                    <h6 class="mb-0">طلبات تم رفعها</h6>
-                                    <h2 class="mt-2 mb-0">{{ total_uploaded }}</h2>
-                                </div>
-                                <i class="fas fa-upload fa-2x opacity-50"></i>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- البطاقات التي تم تسليمها -->
-                    <div class="col-md-4 col-lg-3">
-                        <div class="stats-card bg-success text-white rounded p-3">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <div>
-                                    <h6 class="mb-0">تم التسليم</h6>
-                                    <h2 class="mt-2 mb-0">{{ total_delivered }}</h2>
-                                </div>
-                                <i class="fas fa-check-circle fa-2x opacity-50"></i>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- البطاقات المستلمة -->
-                    <div class="col-md-4 col-lg-3">
-                        <div class="stats-card bg-warning text-white rounded p-3">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <div>
-                                    <h6 class="mb-0">تم الاستلام</h6>
-                                    <h2 class="mt-2 mb-0">{{ total_received }}</h2>
-                                </div>
-                                <i class="fas fa-inbox fa-2x opacity-50"></i>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- البطاقات التي تم العثور عليها -->
-                    <div class="col-md-4 col-lg-3">
-                        <div class="stats-card bg-secondary text-white rounded p-3">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <div>
-                                    <h6 class="mb-0">تم العثور عليها</h6>
-                                    <h2 class="mt-2 mb-0">{{ total_found }}</h2>
-                                </div>
-                                <i class="fas fa-search-plus fa-2x opacity-50"></i>
-                            </div>
+                            <h6 class="mb-0">بطاقات نسك التالفة</h6>
+                            <h2 class="mt-2 mb-0">{{ total_damaged }}</h2>
                         </div>
                     </div>
                 </div>
@@ -117,26 +63,19 @@ document.addEventListener('DOMContentLoaded', function() {
     new Chart(ctx, {
         type: 'bar',
         data: {
-            labels: ['إجمالي الحجاج', 'البطاقات المفقودة', 'طلبات تم رفعها', 'تم التسليم', 'تم الاستلام', 'تم العثور عليها'],
+            labels: ['إجمالي البلاغات', 'بطاقات نسك المفقودة', 'بطاقات نسك التالفة'],
             datasets: [{
                 label: 'إحصائيات الطلبات',
-                data: [{{ total_hajj }}, {{ total_lost }}, {{ total_uploaded }}, 
-                       {{ total_delivered }}, {{ total_received }}, {{ total_found }}],
+                data: [{{ total_hajj }}, {{ total_lost }}, {{ total_damaged }}],
                 backgroundColor: [
                     'rgba(var(--bs-primary-rgb), 0.7)',
                     'rgba(var(--bs-danger-rgb), 0.7)',
-                    'rgba(var(--bs-info-rgb), 0.7)',
-                    'rgba(var(--bs-success-rgb), 0.7)',
-                    'rgba(var(--bs-warning-rgb), 0.7)',
-                    'rgba(var(--bs-secondary-rgb), 0.7)'
+                    'rgba(var(--bs-warning-rgb), 0.7)'
                 ],
                 borderColor: [
                     'rgba(var(--bs-primary-rgb), 1)',
                     'rgba(var(--bs-danger-rgb), 1)',
-                    'rgba(var(--bs-info-rgb), 1)',
-                    'rgba(var(--bs-success-rgb), 1)',
-                    'rgba(var(--bs-warning-rgb), 1)',
-                    'rgba(var(--bs-secondary-rgb), 1)'
+                    'rgba(var(--bs-warning-rgb), 1)'
                 ],
                 borderWidth: 1
             }]

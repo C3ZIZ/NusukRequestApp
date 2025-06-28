@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-{% block title %}بوابة المشرفين - طلبات بطاقة الحج{% endblock %}
+{% block title %}بوابة المشرفين - بديل{% endblock %}
 
 {% block content %}
 <div class="row mb-4">
@@ -8,12 +8,12 @@
         <div class="card border-0 shadow">
             <div class="card-header bg-white d-flex justify-content-between align-items-center py-3">
                 <div class="d-flex align-items-center">
-                    <h2 class="h4 mb-0 ml-3">إدارة طلبات بطاقة الحج</h2>
+                    <h2 class="h4 mb-0 ml-3">إدارة بلاغات بديل (بطاقات نسك المفقودة أو التالفة)</h2>
                 </div>
                 <div class="d-flex align-items-center">
                     <div class="form-group mb-0 ms-3">
                         <div class="input-group">
-                            <input type="number" id="totalHajjInput" class="form-control" placeholder="إجمالي عدد الحجاج" value="{{ total_hajj }}">
+                            <input type="number" id="totalHajjInput" class="form-control" placeholder="إجمالي البلاغات" value="{{ total_hajj }}">
                             <button class="btn btn-primary" onclick="updateTotalHajj()">
                                 <i class="fas fa-save ms-1"></i>حفظ
                             </button>
@@ -25,7 +25,7 @@
             <div class="table-controls">
                 <div class="search-box">
                     <i class="fas fa-search"></i>
-                    <input type="text" id="searchInput" class="form-control search-input" placeholder="البحث بالاسم، رقم الجواز، رقم التأشيرة...">
+                    <input type="text" id="searchInput" class="form-control search-input" placeholder="ابحث بالاسم، رقم الجواز، رقم التأشيرة...">
                 </div>
                 <select id="statusFilter" class="form-select filter-dropdown">
                     <option value="all">جميع الحالات</option>
@@ -40,9 +40,9 @@
                     <table class="table table-hover align-middle mb-0" id="requestsTable">
                         <thead class="table-light">
                             <tr>
-                                <th>المعرف</th>
+                                <th>ID</th>
                                 <th>الموظف</th>
-                                <th>اسم الحاج</th>
+                                <th>اسم البلاغ</th>
                                 <th>رقم الجواز</th>
                                 <th>رقم التأشيرة</th>
                                 <th>السبب</th>
@@ -77,7 +77,7 @@
                                             <span class="badge bg-danger">لا</span>
                                         {% endif %}
                                     {% else %}
-                                        <span class="badge bg-secondary">غير متاح</span>
+                                        <span class="badge bg-secondary">لا ينطبق</span>
                                     {% endif %}
                                 </td>
                                 <td>
@@ -104,7 +104,7 @@
                                 <td colspan="9" class="text-center py-4">
                                     <div class="empty-state">
                                         <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
-                                        <p class="mb-0">لم يتم العثور على طلبات في النظام.</p>
+                                        <p class="mb-0">لا توجد طلبات في النظام.</p>
                                     </div>
                                 </td>
                             </tr>
@@ -121,15 +121,15 @@
     <div class="col-12">
         <div class="card border-0 shadow-sm">
             <div class="card-header bg-white py-3">
-                <h3 class="h5 mb-0">إرشادات للمشرفين</h3>
+                <h3 class="h5 mb-0">تعليمات للمشرفين</h3>
             </div>
             <div class="card-body">
                 <ul class="mb-0">
-                    <li>معالجة الطلبات بسرعة لتقليل وقت الانتظار</li>
-                    <li>التحقق من جميع المعلومات قبل المعالجة</li>
-                    <li>تحديد الطلبات كمكتوبة بمجرد أن تكون البطاقة الفعلية جاهزة</li>
-                    <li>استخدام "إلغاء المعالجة" للطلبات التي تمت معالجتها بالخطأ</li>
-                    <li>الاتصال بالموظف إذا كانت هناك حاجة لمعلومات إضافية</li>
+                    <li>قم بمعالجة البلاغات بسرعة لتقليل وقت الانتظار</li>
+                    <li>تحقق من صحة المعلومات قبل المعالجة</li>
+                    <li>قم بتمييز البلاغات كمكتملة بمجرد أن تكون البطاقة جاهزة فعليًا</li>
+                    <li>استخدم "إلغاء المعالجة" للبلاغات التي تمت معالجتها عن طريق الخطأ</li>
+                    <li>تواصل مع الموظف إذا كانت هناك حاجة لمزيد من المعلومات</li>
                 </ul>
             </div>
         </div>
@@ -170,7 +170,7 @@ function updateStatus(selectElement) {
             }
         },
         error: function(error) {
-            showNotification('حدث خطأ أثناء تحديث الحالة', 'danger');
+            showNotification('خطأ في تحديث الحالة', 'danger');
         }
     });
 }
@@ -183,7 +183,7 @@ function updateTotalHajj() {
         data: { total_hajj: totalHajj },
         success: function(response) {
             if (response.success) {
-                showNotification('تم تحديث إجمالي عدد الحجاج بنجاح', 'success');
+                showNotification('تم تحديث إجمالي البلاغات بنجاح', 'success');
                 // Optionally update the input value to reflect saved value
                 $("#totalHajjInput").val(totalHajj);
             } else {
@@ -191,7 +191,7 @@ function updateTotalHajj() {
             }
         },
         error: function() {
-            showNotification('حدث خطأ أثناء تحديث العدد', 'danger');
+            showNotification('خطأ في تحديث إجمالي البلاغات', 'danger');
         }
     });
 }
@@ -250,7 +250,7 @@ $(document).ready(function() {
                 row.hide();
             }
         });
-        $('#requestCount').text(`${visibleCount} طلب`);
+        $('#requestCount').text(`${visibleCount} بلاغ(ات)`);
     }
     filterTable();
 });
