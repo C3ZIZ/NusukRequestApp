@@ -9,8 +9,8 @@ class AppSettings(db.Model):
     value = db.Column(db.String(255))
 
 
-class HajjCardRequest(db.Model):
-    __tablename__ = 'hajj_card_request_log'
+class CardRequest(db.Model):
+    __tablename__ = 'card_requests'
     id = db.Column(db.Integer, primary_key=True)
     employee_name = db.Column(db.String(100), nullable=False)
     employee_number = db.Column(db.String(10), nullable=False)
@@ -25,7 +25,7 @@ class HajjCardRequest(db.Model):
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
     def __repr__(self):
-        return f"<HajjCardRequest {self.id} - {self.hajj_name}>"
+        return f"<CardRequest {self.id} - {self.hajj_name}>"
 
     def format_date(self, date):
         """Format date safely, handling None values"""

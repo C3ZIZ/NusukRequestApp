@@ -16,8 +16,8 @@ app = Flask(__name__)
 app.secret_key = os.environ.get("SESSION_SECRET", "hajj_card_service_secret_key")
 app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_host=1)
 
-# Set the DATABASE_URL for PostgreSQL compatibility
-app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql://nusuk_db_user:5sLEgCU31JmgCfOxfwiLAaIRC9XrOG5E@dpg-d0k6jmd6ubrc73b0v5e0-a.oregon-postgres.render.com/nusuk_db"
+# Set the DATABASE_URL for Supabase PostgreSQL
+app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql://postgres:Badeel2025@@db.dhbzeklvyarffuepofbw.supabase.co:5432/postgres"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 app.config["SQLALCHEMY_ENGINE_OPTIONS"] = {
     "pool_recycle": 300,

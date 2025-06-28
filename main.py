@@ -4,7 +4,7 @@ from datetime import datetime
 from flask import render_template, request, redirect, url_for, flash, jsonify, session
 
 from app import app, db
-from models import HajjCardRequest, AppSettings
+from models import CardRequest, AppSettings
 
 # Configure logging
 logging.basicConfig(level=logging.DEBUG)
@@ -43,7 +43,7 @@ def index():
 def employee():
     """Employee page to view and submit requests"""
     try:
-        requests = HajjCardRequest.query.order_by(HajjCardRequest.created_at.desc()).all()
+        requests = CardRequest.query.order_by(CardRequest.created_at.desc()).all()
         return render_template('employee.html', requests=requests, language='ar')
     except Exception as e:
         logger.error(f"Error in employee page: {str(e)}")
@@ -81,7 +81,7 @@ def update_total_hajj():
 def admin():
     """Admin page to manage requests"""
     try:
-        requests = HajjCardRequest.query.order_by(HajjCardRequest.created_at.desc()).all()
+        requests = CardRequest.query.order_by(CardRequest.created_at.desc()).all()
         total_hajj = get_total_hajj()
         return render_template('admin.html', 
                             requests=requests, 
@@ -122,7 +122,7 @@ def submit_request():
             card_returned = 'card_returned' in request.form
 
         # Check for duplicate active requests
-        existing_request = HajjCardRequest.query.filter_by(
+        existing_request = CardRequest.query.filter_by(
             passport_number=passport_number, 
             status="New"
         ).first()
@@ -132,7 +132,7 @@ def submit_request():
             return redirect(url_for('employee'))
         
         # Create and save new request
-        new_request = HajjCardRequest()
+        new_request = CardRequest()
         new_request.employee_name = employee_name
         new_request.employee_number = employee_number
         new_request.hajj_name = hajj_name
@@ -161,7 +161,7 @@ def submit_request():
 def update_status(request_id):
     """Update the status of a request"""
     try:
-        hajj_request = HajjCardRequest.query.get_or_404(request_id)
+        hajj_request = CardRequest.query.get_or_404(request_id)
         new_status = request.form.get('status')
         
         # Validate status value against allowed values
@@ -193,7 +193,7 @@ def update_written(request_id):
     """Update the is_written flag of a request"""
     try:
         language = get_language()
-        hajj_request = HajjCardRequest.query.get_or_404(request_id)
+        hajj_request = CardRequest.query.get_or_404(request_id)
         is_written = request.form.get('is_written', 'false')
         
         # Convert string to boolean
@@ -211,20 +211,20 @@ def statistics():
     """Statistics page showing various metrics"""
     try:
         total_hajj = get_total_hajj()
-        total_lost = db.session.query(db.func.count(HajjCardRequest.id)).filter(
-            HajjCardRequest.request_reason == "Lost Card"
+        total_lost = db.session.query(db.func.count(CardRequest.id)).filter(
+            CardRequest.request_reason == "Lost Card"
         ).scalar() or 0
-        total_uploaded = db.session.query(db.func.count(HajjCardRequest.id)).filter(
-            HajjCardRequest.request_upload == True
+        total_uploaded = db.session.query(db.func.count(CardRequest.id)).filter(
+            CardRequest.request_upload == True
         ).scalar() or 0
-        total_delivered = db.session.query(db.func.count(HajjCardRequest.id)).filter(
-            HajjCardRequest.status == "card delivered"
+        total_delivered = db.session.query(db.func.count(CardRequest.id)).filter(
+            CardRequest.status == "card delivered"
         ).scalar() or 0
-        total_received = db.session.query(db.func.count(HajjCardRequest.id)).filter(
-            HajjCardRequest.status == "card received"
+        total_received = db.session.query(db.func.count(CardRequest.id)).filter(
+            CardRequest.status == "card received"
         ).scalar() or 0
-        total_found = db.session.query(db.func.count(HajjCardRequest.id)).filter(
-            HajjCardRequest.status == "found"
+        total_found = db.session.query(db.func.count(CardRequest.id)).filter(
+            CardRequest.status == "found"
         ).scalar() or 0
 
         return render_template('statistics.html',
