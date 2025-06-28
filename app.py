@@ -17,7 +17,7 @@ app.secret_key = os.environ.get("SESSION_SECRET", "hajj_card_service_secret_key"
 app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_host=1)
 
 # Set the DATABASE_URL for Supabase PostgreSQL
-app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql://postgres:Badeel2025@@db.dhbzeklvyarffuepofbw.supabase.co:5432/postgres"
+app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql://postgres:Badeel2025@db.dhbzeklvyarffuepofbw.supabase.co:5432/postgres"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 app.config["SQLALCHEMY_ENGINE_OPTIONS"] = {
     "pool_recycle": 300,
