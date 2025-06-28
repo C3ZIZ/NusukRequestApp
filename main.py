@@ -211,11 +211,11 @@ def statistics():
     """Statistics page showing various metrics"""
     try:
         total_hajj = get_total_hajj()
-        total_lost = supabase.table('card_requests').select('id').eq('request_reason', "Lost Card").execute().count()
-        total_uploaded = supabase.table('card_requests').select('id').eq('request_upload', True).execute().count()
-        total_delivered = supabase.table('card_requests').select('id').eq('status', "card delivered").execute().count()
-        total_received = supabase.table('card_requests').select('id').eq('status', "card received").execute().count()
-        total_found = supabase.table('card_requests').select('id').eq('status', "found").execute().count()
+        total_lost = len(supabase.table('card_requests').select('id').eq('request_reason', "Lost Card").execute().data)
+        total_uploaded = len(supabase.table('card_requests').select('id').eq('request_upload', True).execute().data)
+        total_delivered = len(supabase.table('card_requests').select('id').eq('status', "card delivered").execute().data)
+        total_received = len(supabase.table('card_requests').select('id').eq('status', "card received").execute().data)
+        total_found = len(supabase.table('card_requests').select('id').eq('status', "found").execute().data)
 
         return render_template('statistics.html',
                             language='ar',

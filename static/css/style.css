@@ -311,6 +311,7 @@ html[dir="ltr"] .search-input {
 /* Statistics Page Styling */
 .stats-card {
     transition: transform 0.3s ease, box-shadow 0.3s ease;
+    position: relative;
 }
 
 .stats-card:hover {
@@ -330,6 +331,20 @@ html[dir="ltr"] .search-input {
 
 .stats-card i {
     font-size: 2.5rem;
+}
+
+/* Align icons to top left in Arabic view */
+.stats-card .fa-users,
+.stats-card .fa-search,
+.stats-card .fa-upload,
+.stats-card .fa-check-circle,
+.stats-card .fa-inbox,
+.stats-card .fa-search-plus {
+    position: absolute;
+    top: 1rem;
+    left: 1rem;
+    right: auto;
+    margin: 0;
 }
 
 /* Chart container styling */
