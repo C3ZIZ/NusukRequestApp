@@ -31,6 +31,18 @@ def get_total_hajj():
         logger.error(f"Error getting total hajj: {str(e)}")
         return 0
 
+def parse_datetime_fields(requests):
+    """Convert ISO datetime strings to datetime objects for created_at and updated_at fields."""
+    for req in requests:
+        for field in ["created_at", "updated_at"]:
+            value = req.get(field)
+            if isinstance(value, str):
+                try:
+                    req[field] = datetime.fromisoformat(value.replace('Z', '+00:00'))
+                except Exception:
+                    pass
+    return requests
+
 @app.route('/')
 def index():
     """Landing page with links to employee and admin portals"""
@@ -42,7 +54,8 @@ def employee():
     """Employee page to view and submit requests"""
     try:
         requests = supabase.table('card_requests').select('*').order('created_at', desc=True).execute()
-        return render_template('employee.html', requests=requests.data, language='ar')
+        requests_data = parse_datetime_fields(requests.data)
+        return render_template('employee.html', requests=requests_data, language='ar')
     except Exception as e:
         logger.error(f"Error in employee page: {str(e)}")
         flash("حدث خطأ في النظام", "error")
@@ -78,8 +91,9 @@ def admin():
     try:
         requests = supabase.table('card_requests').select('*').order('created_at', desc=True).execute()
         total_hajj = get_total_hajj()
+        requests_data = parse_datetime_fields(requests.data)
         return render_template('admin.html', 
-                            requests=requests.data, 
+                            requests=requests_data, 
                             language='ar',
                             total_hajj=total_hajj)
     except Exception as e:
