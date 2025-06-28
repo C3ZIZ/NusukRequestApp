@@ -1,6 +1,6 @@
 import logging
 import re
-from datetime import datetime
+from datetime import datetime, timedelta, timezone
 from flask import render_template, request, redirect, url_for, flash, jsonify, session
 from app import app, supabase
 
@@ -25,11 +25,11 @@ def get_language():
 def get_total_hajj():
     """Get the total number of Hajj pilgrims from settings"""
     try:
-        setting = supabase.table('app_settings').select('value').eq('key', 'total_hajj').single().execute()
-        if setting.data and 'value' in setting.data:
-            return int(setting.data['value'])
+        response = supabase.table('app_settings').select('value').eq('key', 'total_hajj').execute()
+        if response.data and len(response.data) > 0 and 'value' in response.data[0]:
+            return int(response.data[0]['value'])
         return 0
-    except (ValueError, TypeError, KeyError) as e:
+    except (ValueError, TypeError, KeyError, Exception) as e:
         logger.error(f"Error getting total hajj: {str(e)}")
         return 0
 
@@ -142,7 +142,8 @@ def submit_request():
             return redirect(url_for('employee'))
         
         # Create and save new request
-        now = datetime.utcnow().isoformat()
+        sa_tz = timezone(timedelta(hours=3))
+        now = datetime.now(sa_tz).isoformat()
         new_request = {
             'employee_name': employee_name,
             'employee_number': employee_number,
@@ -183,7 +184,8 @@ def update_status(request_id):
                 "error": "قيمة الحالة غير صالحة"
             }), 400
             
-        supabase.table('card_requests').update({'status': new_status, 'updated_at': datetime.utcnow()}).eq('id', request_id).execute()
+        sa_tz = timezone(timedelta(hours=3))
+        supabase.table('card_requests').update({'status': new_status, 'updated_at': datetime.now(sa_tz).isoformat()}).eq('id', request_id).execute()
         
         return jsonify({
             "success": True, 
@@ -206,7 +208,8 @@ def update_written(request_id):
         
         # Convert string to boolean
         is_written_bool = (is_written.lower() == 'true')
-        supabase.table('card_requests').update({'is_written': is_written_bool, 'updated_at': datetime.utcnow()}).eq('id', request_id).execute()
+        sa_tz = timezone(timedelta(hours=3))
+        supabase.table('card_requests').update({'is_written': is_written_bool, 'updated_at': datetime.now(sa_tz).isoformat()}).eq('id', request_id).execute()
         return jsonify({"success": True, "is_written": is_written_bool})
     except Exception as e:
         logger.error(f"Error updating written status: {str(e)}")
