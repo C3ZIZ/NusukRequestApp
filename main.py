@@ -79,8 +79,11 @@ def update_total_hajj():
         except ValueError:
             return jsonify({"success": False, "error": "يجب أن تكون القيمة رقماً صحيحاً"}), 400
 
-        # Always upsert (insert or update) the value
-        supabase.table('app_settings').upsert({'key': 'total_hajj', 'value': str(total_hajj)}).execute()
+        # Try update first
+        update_result = supabase.table('app_settings').update({'value': str(total_hajj)}).eq('key', 'total_hajj').execute()
+        if not update_result.data or len(update_result.data) == 0:
+            # If no row updated, insert new
+            supabase.table('app_settings').insert({'key': 'total_hajj', 'value': str(total_hajj)}).execute()
 
         return jsonify({"success": True, "message": "تم تحديث إجمالي عدد الحجاج بنجاح"})
     except Exception as e:
