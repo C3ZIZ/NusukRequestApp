@@ -172,11 +172,13 @@
                                 {% elif req.status == 'request sent' %}bg-info
                                 {% elif req.status == 'card received' %}bg-primary
                                 {% elif req.status == 'card delivered' %}bg-warning
+                                {% elif req.status == 'New' or not req.status %}bg-success
                                 {% endif %}">
                                 {% if req.status == 'found' %}تم العثور عليها
                                 {% elif req.status == 'request sent' %}تم إرسال الطلب
                                 {% elif req.status == 'card received' %}تم استلام البطاقة
                                 {% elif req.status == 'card delivered' %}تم تسليم البطاقة
+                                {% elif req.status == 'New' or not req.status %}جديد
                                 {% endif %}
                             </span>
                         </td>

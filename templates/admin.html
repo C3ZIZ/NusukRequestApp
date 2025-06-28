@@ -96,6 +96,7 @@
                                     <select class="form-select form-select-sm status-select" 
                                             data-request-id="{{ req.id }}" 
                                             onchange="updateStatus(this)">
+                                        <option value="New" {% if req.status == 'New' or not req.status %}selected{% endif %}>جديد</option>
                                         <option value="found" {% if req.status == 'found' %}selected{% endif %}>تم العثور عليها</option>
                                         <option value="request sent" {% if req.status == 'request sent' %}selected{% endif %}>تم إرسال الطلب</option>
                                         <option value="card received" {% if req.status == 'card received' %}selected{% endif %}>تم استلام البطاقة</option>

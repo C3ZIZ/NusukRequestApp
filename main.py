@@ -25,9 +25,11 @@ def get_language():
 def get_total_hajj():
     """Get the total number of Hajj pilgrims from settings"""
     try:
-        setting = supabase.table('app_settings').select('value').eq('key', 'total_hajj').single()
-        return int(setting['value']) if setting and setting['value'] else 0
-    except (ValueError, TypeError) as e:
+        setting = supabase.table('app_settings').select('value').eq('key', 'total_hajj').single().execute()
+        if setting.data and 'value' in setting.data:
+            return int(setting.data['value'])
+        return 0
+    except (ValueError, TypeError, KeyError) as e:
         logger.error(f"Error getting total hajj: {str(e)}")
         return 0
 
@@ -77,13 +79,13 @@ def update_total_hajj():
         except ValueError:
             return jsonify({"success": False, "error": "يجب أن تكون القيمة رقماً صحيحاً"}), 400
 
-        setting = supabase.table('app_settings').select('key').eq('key', 'total_hajj').single()
-        if setting:
+        setting = supabase.table('app_settings').select('key').eq('key', 'total_hajj').single().execute()
+        if setting.data:
             supabase.table('app_settings').update({'value': str(total_hajj)}).eq('key', 'total_hajj').execute()
         else:
             supabase.table('app_settings').insert({'key': 'total_hajj', 'value': str(total_hajj)}).execute()
 
-        return jsonify({"success": True})
+        return jsonify({"success": True, "message": "تم تحديث إجمالي عدد الحجاج بنجاح"})
     except Exception as e:
         logger.error(f"Error updating total hajj: {str(e)}")
         return jsonify({"success": False, "error": "حدث خطأ في النظام"}), 500
