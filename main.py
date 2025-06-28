@@ -116,10 +116,9 @@ def submit_request():
         if request_reason == "Damaged Card":
             card_returned = 'card_returned' in request.form
 
-        # Check for duplicate active requests
-        existing_request = supabase.table('card_requests').select('passport_number').eq('passport_number', passport_number).eq('status', 'New').single()
-        
-        if existing_request:
+        # Check for duplicate active requests (Supabase fix)
+        existing_request = supabase.table('card_requests').select('passport_number').eq('passport_number', passport_number).eq('status', 'New').execute()
+        if existing_request.data and len(existing_request.data) > 0:
             flash(MESSAGES[language]['duplicate_request'].format(passport=passport_number), 'error')
             return redirect(url_for('employee'))
         
