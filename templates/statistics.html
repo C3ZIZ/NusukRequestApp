@@ -13,57 +13,57 @@
                 <div class="row g-4">
                     <!-- إجمالي عدد الحجاج الواصلين -->
                     <div class="col-md-4">
-                        <div class="stats-card bg-primary text-white rounded p-3">
-                            <h6 class="mb-0">إجمالي عدد الحجاج الواصلين</h6>
-                            <h2 class="mt-2 mb-0">{{ total_hajj }}</h2>
+                        <div class="stats-card bg-primary text-white rounded p-3" style="background-color: var(--bs-primary); color: #fff;">
+                            <h6 class="mb-0" style="color: #fff;">إجمالي عدد الحجاج الواصلين</h6>
+                            <h2 class="mt-2 mb-0" style="color: #fff;">{{ total_hajj }}</h2>
                         </div>
                     </div>
                     
                     <!-- بطاقات نسك المفقودة -->
                     <div class="col-md-4">
-                        <div class="stats-card bg-primary text-white rounded p-3">
-                            <h6 class="mb-0">بطاقات نسك المفقودة</h6>
-                            <h2 class="mt-2 mb-0">{{ total_lost }}</h2>
+                        <div class="stats-card bg-primary text-white rounded p-3" style="background-color: var(--bs-primary); color: #fff;">
+                            <h6 class="mb-0" style="color: #fff;">بطاقات نسك المفقودة</h6>
+                            <h2 class="mt-2 mb-0" style="color: #fff;">{{ total_lost }}</h2>
                         </div>
                     </div>
                     
                     <!-- بطاقات نسك التالفة -->
                     <div class="col-md-4">
-                        <div class="stats-card bg-primary text-white rounded p-3">
-                            <h6 class="mb-0">بطاقات نسك التالفة</h6>
-                            <h2 class="mt-2 mb-0">{{ total_damaged }}</h2>
+                        <div class="stats-card bg-primary text-white rounded p-3" style="background-color: var(--bs-primary); color: #fff;">
+                            <h6 class="mb-0" style="color: #fff;">بطاقات نسك التالفة</h6>
+                            <h2 class="mt-2 mb-0" style="color: #fff;">{{ total_damaged }}</h2>
                         </div>
                     </div>
                     
                     <!-- الطلبات المرفوعة -->
                     <div class="col-md-4">
-                        <div class="stats-card bg-primary text-white rounded p-3">
-                            <h6 class="mb-0">الطلبات المرفوعة</h6>
-                            <h2 class="mt-2 mb-0">{{ total_uploaded }}</h2>
+                        <div class="stats-card bg-primary text-white rounded p-3" style="background-color: var(--bs-primary); color: #fff;">
+                            <h6 class="mb-0" style="color: #fff;">الطلبات المرفوعة</h6>
+                            <h2 class="mt-2 mb-0" style="color: #fff;">{{ total_uploaded }}</h2>
                         </div>
                     </div>
                     
                     <!-- تم التسليم -->
                     <div class="col-md-4">
-                        <div class="stats-card bg-primary text-white rounded p-3">
-                            <h6 class="mb-0">تم التسليم</h6>
-                            <h2 class="mt-2 mb-0">{{ total_delivered }}</h2>
+                        <div class="stats-card bg-primary text-white rounded p-3" style="background-color: var(--bs-primary); color: #fff;">
+                            <h6 class="mb-0" style="color: #fff;">تم التسليم</h6>
+                            <h2 class="mt-2 mb-0" style="color: #fff;">{{ total_delivered }}</h2>
                         </div>
                     </div>
                     
                     <!-- تم الاستلام -->
                     <div class="col-md-4">
-                        <div class="stats-card bg-primary text-white rounded p-3">
-                            <h6 class="mb-0">تم الاستلام</h6>
-                            <h2 class="mt-2 mb-0">{{ total_received }}</h2>
+                        <div class="stats-card bg-primary text-white rounded p-3" style="background-color: var(--bs-primary); color: #fff;">
+                            <h6 class="mb-0" style="color: #fff;">تم الاستلام</h6>
+                            <h2 class="mt-2 mb-0" style="color: #fff;">{{ total_received }}</h2>
                         </div>
                     </div>
                     
                     <!-- تم العثور عليها -->
                     <div class="col-md-4">
-                        <div class="stats-card bg-primary text-white rounded p-3">
-                            <h6 class="mb-0">تم العثور عليها</h6>
-                            <h2 class="mt-2 mb-0">{{ total_found }}</h2>
+                        <div class="stats-card bg-primary text-white rounded p-3" style="background-color: var(--bs-primary); color: #fff;">
+                            <h6 class="mb-0" style="color: #fff;">تم العثور عليها</h6>
+                            <h2 class="mt-2 mb-0" style="color: #fff;">{{ total_found }}</h2>
                         </div>
                     </div>
                 </div>
@@ -100,20 +100,20 @@ document.addEventListener('DOMContentLoaded', function() {
                 label: 'إحصائيات الطلبات',
                 data: [{{ [total_lost, total_damaged, total_uploaded, total_delivered, total_received, total_found]|join(', ') }}],
                 backgroundColor: [
-                    'rgba(var(--bs-danger-rgb), 0.7)',
-                    'rgba(var(--bs-warning-rgb), 0.7)',
-                    'rgba(var(--bs-info-rgb), 0.7)',
-                    'rgba(var(--bs-success-rgb), 0.7)',
-                    'rgba(var(--bs-secondary-rgb), 0.7)',
-                    'rgba(var(--bs-dark-rgb), 0.7)'
+                    '#0d6efd', // primary blue
+                    '#6f42c1', // purple
+                    '#20c997', // teal
+                    '#fd7e14', // orange
+                    '#198754', // green
+                    '#343a40'  // dark
                 ],
                 borderColor: [
-                    'rgba(var(--bs-danger-rgb), 1)',
-                    'rgba(var(--bs-warning-rgb), 1)',
-                    'rgba(var(--bs-info-rgb), 1)',
-                    'rgba(var(--bs-success-rgb), 1)',
-                    'rgba(var(--bs-secondary-rgb), 1)',
-                    'rgba(var(--bs-dark-rgb), 1)'
+                    '#0d6efd',
+                    '#6f42c1',
+                    '#20c997',
+                    '#fd7e14',
+                    '#198754',
+                    '#343a40'
                 ],
                 borderWidth: 1
             }]
