@@ -11,17 +11,17 @@
             </div>
             <div class="card-body">
                 <div class="row g-4">
-                    <!-- إجمالي البلاغات -->
+                    <!-- إجمالي عدد الحجاج الواصلين -->
                     <div class="col-md-4">
                         <div class="stats-card bg-primary text-white rounded p-3">
-                            <h6 class="mb-0">إجمالي البلاغات</h6>
+                            <h6 class="mb-0">إجمالي عدد الحجاج الواصلين</h6>
                             <h2 class="mt-2 mb-0">{{ total_hajj }}</h2>
                         </div>
                     </div>
                     
                     <!-- بطاقات نسك المفقودة -->
                     <div class="col-md-4">
-                        <div class="stats-card bg-danger text-white rounded p-3">
+                        <div class="stats-card bg-primary text-white rounded p-3">
                             <h6 class="mb-0">بطاقات نسك المفقودة</h6>
                             <h2 class="mt-2 mb-0">{{ total_lost }}</h2>
                         </div>
@@ -29,7 +29,7 @@
                     
                     <!-- بطاقات نسك التالفة -->
                     <div class="col-md-4">
-                        <div class="stats-card bg-warning text-white rounded p-3">
+                        <div class="stats-card bg-primary text-white rounded p-3">
                             <h6 class="mb-0">بطاقات نسك التالفة</h6>
                             <h2 class="mt-2 mb-0">{{ total_damaged }}</h2>
                         </div>
@@ -37,7 +37,7 @@
                     
                     <!-- الطلبات المرفوعة -->
                     <div class="col-md-4">
-                        <div class="stats-card bg-info text-white rounded p-3">
+                        <div class="stats-card bg-primary text-white rounded p-3">
                             <h6 class="mb-0">الطلبات المرفوعة</h6>
                             <h2 class="mt-2 mb-0">{{ total_uploaded }}</h2>
                         </div>
@@ -45,7 +45,7 @@
                     
                     <!-- تم التسليم -->
                     <div class="col-md-4">
-                        <div class="stats-card bg-success text-white rounded p-3">
+                        <div class="stats-card bg-primary text-white rounded p-3">
                             <h6 class="mb-0">تم التسليم</h6>
                             <h2 class="mt-2 mb-0">{{ total_delivered }}</h2>
                         </div>
@@ -53,7 +53,7 @@
                     
                     <!-- تم الاستلام -->
                     <div class="col-md-4">
-                        <div class="stats-card bg-secondary text-white rounded p-3">
+                        <div class="stats-card bg-primary text-white rounded p-3">
                             <h6 class="mb-0">تم الاستلام</h6>
                             <h2 class="mt-2 mb-0">{{ total_received }}</h2>
                         </div>
@@ -61,7 +61,7 @@
                     
                     <!-- تم العثور عليها -->
                     <div class="col-md-4">
-                        <div class="stats-card bg-dark text-white rounded p-3">
+                        <div class="stats-card bg-primary text-white rounded p-3">
                             <h6 class="mb-0">تم العثور عليها</h6>
                             <h2 class="mt-2 mb-0">{{ total_found }}</h2>
                         </div>
@@ -95,12 +95,11 @@ document.addEventListener('DOMContentLoaded', function() {
     new Chart(ctx, {
         type: 'bar',
         data: {
-            labels: ['إجمالي البلاغات', 'بطاقات نسك المفقودة', 'بطاقات نسك التالفة', 'الطلبات المرفوعة', 'تم التسليم', 'تم الاستلام', 'تم العثور عليها'],
+            labels: ['بطاقات نسك المفقودة', 'بطاقات نسك التالفة', 'الطلبات المرفوعة', 'تم التسليم', 'تم الاستلام', 'تم العثور عليها'],
             datasets: [{
                 label: 'إحصائيات الطلبات',
-                data: [{{ [total_hajj, total_lost, total_damaged, total_uploaded, total_delivered, total_received, total_found]|join(', ') }}],
+                data: [{{ [total_lost, total_damaged, total_uploaded, total_delivered, total_received, total_found]|join(', ') }}],
                 backgroundColor: [
-                    'rgba(var(--bs-primary-rgb), 0.7)',
                     'rgba(var(--bs-danger-rgb), 0.7)',
                     'rgba(var(--bs-warning-rgb), 0.7)',
                     'rgba(var(--bs-info-rgb), 0.7)',
@@ -109,7 +108,6 @@ document.addEventListener('DOMContentLoaded', function() {
                     'rgba(var(--bs-dark-rgb), 0.7)'
                 ],
                 borderColor: [
-                    'rgba(var(--bs-primary-rgb), 1)',
                     'rgba(var(--bs-danger-rgb), 1)',
                     'rgba(var(--bs-warning-rgb), 1)',
                     'rgba(var(--bs-info-rgb), 1)',

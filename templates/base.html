@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}بديل - نظام الإبلاغ عن البطاقات المفقودة أو التالفة{% endblock %}</title>
+    <title>{% block title %}بديل{% endblock %}</title>
     
     <!-- Bootstrap 5 CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.rtl.min.css">
@@ -26,12 +26,12 @@
         <div class="container">
             <div class="d-flex justify-content-between align-items-center flex-wrap flex-row-reverse">
                 <a href="{{ url_for('index') }}" class="text-white text-decoration-none d-flex align-items-center logo-link" style="font-size:1.5rem;">
-                    <i class="fas fa-id-card ms-2"></i>
-                    <span class="fw-bold">بديل - نظام الإبلاغ عن البطاقات المفقودة أو التالفة</span>
+                    <i class="fas fa-id-card ms-1" style="margin-left: 0.5rem;"></i>
+                    <span class="fw-bold" style="margin-right: 0.25rem;">بديل</span>
                 </a>
-                <a href="{{ url_for('statistics') }}" class="btn btn-light statistics-navbar-btn d-flex align-items-center">
-                    <i class="fas fa-chart-bar ms-1"></i>
-                    الإحصائيات
+                <a href="{{ url_for('statistics') }}" class="btn btn-light statistics-navbar-btn d-flex align-items-center" style="gap: 0.4rem;">
+                    <i class="fas fa-chart-bar"></i>
+                    <span>الإحصائيات</span>
                 </a>
             </div>
         </div>
@@ -56,9 +56,7 @@
 
     <footer class="bg-light py-4 mt-5">
         <div class="container text-center text-muted">
-            <p class="mb-0">
-  &copy; 2025 بديل — جميع الحقوق محفوظة لعبدالعزيز حافظ، C3ZIZ، وبديل
-</p>
+            <p class="mb-0">&copy; 2025 Badeel. جميع الحقوق محفوظة. منصة بديل لخدمة الحجاج في الإبلاغ عن البطاقات المفقودة أو التالفة. تطوير <a href="mailto:abdulazizhafez2004@gmail.com" class="text-decoration-none text-muted">C3ZIZ</a></p>
         </div>
     </footer>
     
