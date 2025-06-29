@@ -29,9 +29,41 @@
                     
                     <!-- بطاقات نسك التالفة -->
                     <div class="col-md-4">
-                        <div class="stats-card bg-info text-white rounded p-3">
+                        <div class="stats-card bg-warning text-white rounded p-3">
                             <h6 class="mb-0">بطاقات نسك التالفة</h6>
                             <h2 class="mt-2 mb-0">{{ total_damaged }}</h2>
+                        </div>
+                    </div>
+                    
+                    <!-- الطلبات المرفوعة -->
+                    <div class="col-md-4">
+                        <div class="stats-card bg-info text-white rounded p-3">
+                            <h6 class="mb-0">الطلبات المرفوعة</h6>
+                            <h2 class="mt-2 mb-0">{{ total_uploaded }}</h2>
+                        </div>
+                    </div>
+                    
+                    <!-- تم التسليم -->
+                    <div class="col-md-4">
+                        <div class="stats-card bg-success text-white rounded p-3">
+                            <h6 class="mb-0">تم التسليم</h6>
+                            <h2 class="mt-2 mb-0">{{ total_delivered }}</h2>
+                        </div>
+                    </div>
+                    
+                    <!-- تم الاستلام -->
+                    <div class="col-md-4">
+                        <div class="stats-card bg-secondary text-white rounded p-3">
+                            <h6 class="mb-0">تم الاستلام</h6>
+                            <h2 class="mt-2 mb-0">{{ total_received }}</h2>
+                        </div>
+                    </div>
+                    
+                    <!-- تم العثور عليها -->
+                    <div class="col-md-4">
+                        <div class="stats-card bg-dark text-white rounded p-3">
+                            <h6 class="mb-0">تم العثور عليها</h6>
+                            <h2 class="mt-2 mb-0">{{ total_found }}</h2>
                         </div>
                     </div>
                 </div>
@@ -41,7 +73,7 @@
                     <div class="col-12">
                         <div class="card border-0 shadow-sm">
                             <div class="card-header bg-white py-3">
-                                <h3 class="h5 mb-0">تحليل الطلبات</h3>
+                                <h3 class="h5 mb-0">تحليل الطلبات حسب الحالة</h3>
                             </div>
                             <div class="card-body">
                                 <canvas id="requestsChart"></canvas>
@@ -63,19 +95,27 @@ document.addEventListener('DOMContentLoaded', function() {
     new Chart(ctx, {
         type: 'bar',
         data: {
-            labels: ['إجمالي البلاغات', 'بطاقات نسك المفقودة', 'بطاقات نسك التالفة'],
+            labels: ['إجمالي البلاغات', 'بطاقات نسك المفقودة', 'بطاقات نسك التالفة', 'الطلبات المرفوعة', 'تم التسليم', 'تم الاستلام', 'تم العثور عليها'],
             datasets: [{
                 label: 'إحصائيات الطلبات',
-                data: [{{ total_hajj }}, {{ total_lost }}, {{ total_damaged }}],
+                data: [{{ [total_hajj, total_lost, total_damaged, total_uploaded, total_delivered, total_received, total_found]|join(', ') }}],
                 backgroundColor: [
                     'rgba(var(--bs-primary-rgb), 0.7)',
                     'rgba(var(--bs-danger-rgb), 0.7)',
-                    'rgba(var(--bs-warning-rgb), 0.7)'
+                    'rgba(var(--bs-warning-rgb), 0.7)',
+                    'rgba(var(--bs-info-rgb), 0.7)',
+                    'rgba(var(--bs-success-rgb), 0.7)',
+                    'rgba(var(--bs-secondary-rgb), 0.7)',
+                    'rgba(var(--bs-dark-rgb), 0.7)'
                 ],
                 borderColor: [
                     'rgba(var(--bs-primary-rgb), 1)',
                     'rgba(var(--bs-danger-rgb), 1)',
-                    'rgba(var(--bs-warning-rgb), 1)'
+                    'rgba(var(--bs-warning-rgb), 1)',
+                    'rgba(var(--bs-info-rgb), 1)',
+                    'rgba(var(--bs-success-rgb), 1)',
+                    'rgba(var(--bs-secondary-rgb), 1)',
+                    'rgba(var(--bs-dark-rgb), 1)'
                 ],
                 borderWidth: 1
             }]

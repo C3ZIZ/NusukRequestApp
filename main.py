@@ -221,6 +221,7 @@ def statistics():
     try:
         total_hajj = get_total_hajj()
         total_lost = len(supabase.table('card_requests').select('id').eq('request_reason', "Lost Card").execute().data)
+        total_damaged = len(supabase.table('card_requests').select('id').eq('request_reason', "Damaged Card").execute().data)
         total_uploaded = len(supabase.table('card_requests').select('id').eq('request_upload', True).execute().data)
         total_delivered = len(supabase.table('card_requests').select('id').eq('status', "card delivered").execute().data)
         total_received = len(supabase.table('card_requests').select('id').eq('status', "card received").execute().data)
@@ -230,6 +231,7 @@ def statistics():
                             language='ar',
                             total_hajj=total_hajj,
                             total_lost=total_lost,
+                            total_damaged=total_damaged,
                             total_uploaded=total_uploaded,
                             total_delivered=total_delivered,
                             total_received=total_received,
