@@ -177,7 +177,7 @@ def update_status(request_id):
         new_status = request.form.get('status')
         
         # Validate status value against allowed values
-        allowed_statuses = ['found', 'request sent', 'card received', 'card delivered']
+        allowed_statuses = ['New', 'found', 'request sent', 'card received', 'card delivered']
         if new_status not in allowed_statuses:
             return jsonify({
                 "success": False, 
