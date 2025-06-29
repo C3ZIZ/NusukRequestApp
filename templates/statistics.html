@@ -100,19 +100,19 @@ document.addEventListener('DOMContentLoaded', function() {
                 label: 'إحصائيات الطلبات',
                 data: [{{ [total_lost, total_damaged, total_uploaded, total_delivered, total_received, total_found]|join(', ') }}],
                 backgroundColor: [
-                    '#0d6efd', // primary blue
-                    '#6f42c1', // purple
-                    '#20c997', // teal
-                    '#fd7e14', // orange
-                    '#198754', // green
-                    '#343a40'  // dark
+                    '#343a40',
+                    '#343a40',
+                    '#343a40',
+                    '#343a40',
+                    '#343a40',
+                    '#343a40'
                 ],
                 borderColor: [
-                    '#0d6efd',
-                    '#6f42c1',
-                    '#20c997',
-                    '#fd7e14',
-                    '#198754',
+                    '#343a40',
+                    '#343a40',
+                    '#343a40',
+                    '#343a40',
+                    '#343a40',
                     '#343a40'
                 ],
                 borderWidth: 1
@@ -120,6 +120,7 @@ document.addEventListener('DOMContentLoaded', function() {
         },
         options: {
             responsive: true,
+            maintainAspectRatio: false,
             scales: {
                 y: {
                     beginAtZero: true
