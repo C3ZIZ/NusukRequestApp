@@ -99,11 +99,6 @@
             <option value="New">جديد</option>
             <option value="Processed">تم المعالجة</option>
         </select>
-        <select id="reasonFilter" class="form-select filter-dropdown">
-            <option value="all">جميع الأسباب</option>
-            <option value="Lost Card">بطاقة مفقودة</option>
-            <option value="Damaged Card">بطاقة تالفة</option>
-        </select>
     </div>
     <div class="card-body p-0">
         <div class="table-responsive">
@@ -221,7 +216,6 @@
         const requestsTable = document.getElementById('requestsTable');
         const searchInput = document.getElementById('searchInput');
         const statusFilter = document.getElementById('statusFilter');
-        const reasonFilter = document.getElementById('reasonFilter');
         const requestCountBadge = document.getElementById('requestCount');
         
         // Count and display total requests
@@ -233,27 +227,21 @@
         // Status filter
         statusFilter.addEventListener('change', filterTable);
         
-        // Reason filter
-        reasonFilter.addEventListener('change', filterTable);
-        
         function filterTable() {
             const searchValue = searchInput.value.toLowerCase();
             const statusValue = statusFilter.value;
-            const reasonValue = reasonFilter.value;
             const rows = requestsTable.querySelectorAll('tbody tr:not([colspan])');
             
             let visibleCount = 0;
             
             rows.forEach(row => {
                 const status = row.dataset.status;
-                const reason = row.dataset.reason;
                 const text = row.textContent.toLowerCase();
                 
                 const statusMatch = statusValue === 'all' || status === statusValue;
-                const reasonMatch = reasonValue === 'all' || reason === reasonValue;
                 const textMatch = text.includes(searchValue);
                 
-                if (statusMatch && reasonMatch && textMatch) {
+                if (statusMatch && textMatch) {
                     row.style.display = '';
                     visibleCount++;
                 } else {
@@ -262,7 +250,7 @@
             });
             
             // Update displayed count
-            updateRequestCount(visibleCount);
+            requestCountBadge.textContent = visibleCount;
         }
         function updateRequestCount(count) {
             const totalRows = requestsTable.querySelectorAll('tbody tr:not([colspan])').length;
