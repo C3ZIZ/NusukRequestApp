@@ -237,13 +237,19 @@ $(document).ready(function() {
         rows.each(function() {
             const row = $(this);
             const status = row.data('status');
-            // Only search in name, passport, visa columns
-            const name = row.find('td').eq(2).text().toLowerCase();
+            // Search in hajj name, passport, visa, and employee name columns
+            const hajjName = row.find('td').eq(2).text().toLowerCase();
             const passport = row.find('td').eq(3).text().toLowerCase();
             const visa = row.find('td').eq(4).text().toLowerCase();
+            const employeeName = row.find('td').eq(1).text().toLowerCase();
             const statusMatch = statusValue === 'all' || status === statusValue;
-            const textMatch = name.includes(searchValue) || passport.includes(searchValue) || visa.includes(searchValue);
-            if (statusMatch && (searchValue === '' || textMatch)) {
+            const textMatch =
+                hajjName.includes(searchValue) ||
+                passport.includes(searchValue) ||
+                visa.includes(searchValue) ||
+                employeeName.includes(searchValue) ||
+                searchValue === '';
+            if (statusMatch && textMatch) {
                 row.show();
                 visibleCount++;
             } else {

@@ -234,23 +234,22 @@
             const searchValue = searchInput.value.toLowerCase();
             const statusValue = statusFilter.value;
             const rows = requestsTable.querySelectorAll('tbody tr:not([colspan])');
-            
             let visibleCount = 0;
-            
             rows.forEach(row => {
                 const status = row.dataset.status;
-                const text = row.textContent.toLowerCase();
-                
-                let statusMatch = false;
-                if (statusValue === 'all') {
-                    statusMatch = true;
-                } else if (statusValue === 'New' && (status === 'New' || status === 'جديد')) {
-                    statusMatch = true;
-                } else if (statusValue === status) {
-                    statusMatch = true;
-                }
-                const textMatch = text.includes(searchValue);
-                
+                // Search in hajj name, passport, visa, and employee name columns
+                const tds = row.querySelectorAll('td');
+                const employeeName = tds[1]?.textContent.toLowerCase() || '';
+                const hajjName = tds[2]?.textContent.toLowerCase() || '';
+                const passport = tds[3]?.textContent.toLowerCase() || '';
+                const visa = tds[4]?.textContent.toLowerCase() || '';
+                let statusMatch = statusValue === 'all' || status === statusValue || (statusValue === 'New' && (status === 'New' || status === 'جديد'));
+                let textMatch =
+                    employeeName.includes(searchValue) ||
+                    hajjName.includes(searchValue) ||
+                    passport.includes(searchValue) ||
+                    visa.includes(searchValue) ||
+                    searchValue === '';
                 if (statusMatch && textMatch) {
                     row.style.display = '';
                     visibleCount++;
@@ -258,8 +257,6 @@
                     row.style.display = 'none';
                 }
             });
-            
-            // Update displayed count
             requestCountBadge.textContent = visibleCount;
         }
         function updateRequestCount(count) {
