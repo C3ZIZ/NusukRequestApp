@@ -13,7 +13,7 @@
                 <div class="d-flex align-items-center">
                     <div class="form-group mb-0 ms-3">
                         <div class="input-group">
-                            <input type="number" id="totalHajjInput" class="form-control" placeholder="إجمالي البلاغات" value="{{ total_hajj }}">
+                            <input type="number" id="totalHajjInput" class="form-control" placeholder="إجمالي عدد الحجاج" value="{{ total_hajj }}">
                             <button class="btn btn-primary" onclick="updateTotalHajj()">
                                 <i class="fas fa-save ms-1"></i>حفظ
                             </button>
@@ -141,11 +141,10 @@
 <script>
 function showNotification(message, type = 'success') {
     $("#status-alert").remove();
-    const icon = type === 'success' ? '✔️' : '❌';
+    // Removed icon from notification
     const alertClass = type === 'success' ? 'alert-success' : 'alert-danger';
     const alertHtml = `
         <div id="status-alert" class="alert ${alertClass} alert-dismissible fade show custom-alert" role="alert" style="max-width: 400px; margin: 20px auto; left: 0; right: 0; z-index: 1055; position: fixed; top: 20px; text-align: center; box-shadow: 0 2px 12px rgba(0,0,0,0.12);">
-            <span style="font-size:1.2em;vertical-align:middle;">${icon}</span>
             <span style="margin-right:8px;vertical-align:middle;">${message}</span>
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close" style="float:left;"></button>
         </div>
@@ -183,7 +182,7 @@ function updateTotalHajj() {
         data: { total_hajj: totalHajj },
         success: function(response) {
             if (response.success) {
-                showNotification('تم تحديث إجمالي البلاغات بنجاح', 'success');
+                showNotification('تم تحديث إجمالي عدد الحجاج بنجاح', 'success');
                 // Optionally update the input value to reflect saved value
                 $("#totalHajjInput").val(totalHajj);
             } else {
@@ -191,7 +190,7 @@ function updateTotalHajj() {
             }
         },
         error: function() {
-            showNotification('خطأ في تحديث إجمالي البلاغات', 'danger');
+            showNotification('خطأ في تحديث إجمالي عدد الحجاج', 'danger');
         }
     });
 }
