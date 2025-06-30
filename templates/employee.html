@@ -97,7 +97,10 @@
         <select id="statusFilter" class="form-select filter-dropdown">
             <option value="all">جميع الحالات</option>
             <option value="New">جديد</option>
-            <option value="Processed">تم المعالجة</option>
+            <option value="found">تم العثور عليها</option>
+            <option value="request sent">تم إرسال الطلب</option>
+            <option value="card received">تم استلام البطاقة</option>
+            <option value="card delivered">تم تسليم البطاقة</option>
         </select>
     </div>
     <div class="card-body p-0">
@@ -238,7 +241,14 @@
                 const status = row.dataset.status;
                 const text = row.textContent.toLowerCase();
                 
-                const statusMatch = statusValue === 'all' || status === statusValue;
+                let statusMatch = false;
+                if (statusValue === 'all') {
+                    statusMatch = true;
+                } else if (statusValue === 'New' && (status === 'New' || status === 'جديد')) {
+                    statusMatch = true;
+                } else if (statusValue === status) {
+                    statusMatch = true;
+                }
                 const textMatch = text.includes(searchValue);
                 
                 if (statusMatch && textMatch) {

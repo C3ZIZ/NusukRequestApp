@@ -13,7 +13,8 @@
                 <div class="d-flex align-items-center">
                     <div class="form-group mb-0 ms-3">
                         <div class="input-group">
-                            <input type="number" id="totalHajjInput" class="form-control" placeholder="إجمالي عدد الحجاج" value="{{ total_hajj }}">
+                            <label for="totalHajjInput" class="input-group-text" style="min-width: 150px;">إجمالي عدد الحجاج</label>
+                            <input type="number" id="totalHajjInput" class="form-control" value="{{ total_hajj }}">
                             <button class="btn btn-primary" onclick="updateTotalHajj()">
                                 <i class="fas fa-save ms-1"></i>حفظ
                             </button>
