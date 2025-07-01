@@ -21,13 +21,6 @@ document.addEventListener('DOMContentLoaded', function() {
             bsAlert.close();
         });
     }, 5000);
-    
-    // Add timestamp to footer
-    var footerElement = document.querySelector('footer p.mb-0');
-    if (footerElement) {
-        var currentYear = new Date().getFullYear();
-        footerElement.innerHTML = `&copy; ${currentYear} Hajj Card Request Management System`;
-    }
 });
 
 // Table Sorting Functionality
