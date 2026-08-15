@@ -1,3 +1,28 @@
-data/database.db
-data/database.db
-data/database.db
+# Secrets
+.env
+.env.*
+!.env.example
+
+# SQLite database and its write-ahead log
+data/*.db
+data/*.db-wal
+data/*.db-shm
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+.venv/
+venv/
+
+# Tooling
+.pytest_cache/
+.ruff_cache/
+.coverage
+
+# Editors and OS
+.vscode/
+.idea/
+.DS_Store

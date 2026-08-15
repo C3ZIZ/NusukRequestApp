@@ -1,0 +1,93 @@
+{% extends 'base.html' %}
+
+{% block title %}بديل - الإحصائيات{% endblock %}
+
+{% block content %}
+{% set tiles = [
+    ('إجمالي عدد الحجاج الواصلين', total_hajj),
+    ('إجمالي البلاغات', total_requests),
+    ('بطاقات نسك المفقودة', total_lost),
+    ('بطاقات نسك التالفة', total_damaged),
+    ('بلاغات جديدة', total_new),
+    ('الطلبات المرفوعة', total_uploaded),
+    ('تمت الكتابة', total_written),
+    ('تم العثور عليها', total_found),
+    ('تم الاستلام', total_received),
+    ('تم التسليم', total_delivered)
+] %}
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white py-3">
+                <h2 class="h4 mb-0">إحصائيات نظام بديل</h2>
+            </div>
+            <div class="card-body">
+                <div class="row g-4">
+                    {% for label, value in tiles %}
+                    <div class="col-md-4">
+                        <div class="stats-card bg-primary text-white rounded p-3">
+                            <h6 class="mb-0">{{ label }}</h6>
+                            <h2 class="mt-2 mb-0">{{ value }}</h2>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <div class="row mt-4">
+                    <div class="col-12">
+                        <div class="card border-0 shadow-sm">
+                            <div class="card-header bg-white py-3">
+                                <h3 class="h5 mb-0">تحليل البلاغات حسب الحالة</h3>
+                            </div>
+                            <div class="card-body">
+                                <div class="chart-container">
+                                    <canvas id="requestsChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script id="chart-data" type="application/json">
+{{ {
+    'labels': ['بطاقات مفقودة', 'بطاقات تالفة', 'جديدة', 'مرفوعة', 'تمت الكتابة', 'تم العثور عليها', 'تم الاستلام', 'تم التسليم'],
+    'values': [total_lost, total_damaged, total_new, total_uploaded, total_written, total_found, total_received, total_delivered]
+} | tojson }}
+</script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    // Read the numbers from a JSON script tag rather than interpolating them
+    // into JavaScript source, so the template cannot emit invalid syntax.
+    const chartData = JSON.parse(document.getElementById('chart-data').textContent);
+
+    new Chart(document.getElementById('requestsChart').getContext('2d'), {
+        type: 'bar',
+        data: {
+            labels: chartData.labels,
+            datasets: [{
+                label: 'عدد البلاغات',
+                data: chartData.values,
+                backgroundColor: '#343a40',
+                borderColor: '#343a40',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: { beginAtZero: true, ticks: { precision: 0 } }
+            },
+            plugins: { legend: { display: false } }
+        }
+    });
+});
+</script>
+{% endblock %}

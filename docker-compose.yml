@@ -1,0 +1,30 @@
+# Deployment descriptor for Coolify (and for `docker compose up` locally).
+#
+# In Coolify: create a "Docker Compose" resource pointing at this repository,
+# set SESSION_SECRET in the environment tab, and the named volume below is
+# provisioned automatically. Nothing else is required.
+
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    environment:
+      # Required. Generate with: python -c "import secrets; print(secrets.token_hex(32))"
+      SESSION_SECRET: ${SESSION_SECRET:?SESSION_SECRET must be set}
+      DATABASE_PATH: /data/badeel.db
+      LOG_LEVEL: ${LOG_LEVEL:-INFO}
+    volumes:
+      - badeel-data:/data
+    ports:
+      - "8000"
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://127.0.0.1:8000/healthz"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+
+volumes:
+  badeel-data:

@@ -1,8 +1,0 @@
-services:
-  - type: web
-    name: nusuk-request-app
-    env: python
-    plan: free
-    buildCommand: pip install .
-    startCommand: gunicorn main:app
-    autoDeploy: true

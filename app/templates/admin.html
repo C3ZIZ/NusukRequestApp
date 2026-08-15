@@ -1,0 +1,343 @@
+{% extends 'base.html' %}
+
+{% block title %}بوابة المشرفين - بديل{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card border-0 shadow">
+            <div class="card-header bg-white d-flex justify-content-between align-items-center py-3 flex-wrap gap-2">
+                <div class="d-flex align-items-center">
+                    <h2 class="h4 mb-0 ml-3">إدارة بلاغات بديل (بطاقات نسك المفقودة أو التالفة)</h2>
+                </div>
+                <div class="d-flex align-items-center">
+                    <div class="form-group mb-0 ms-3">
+                        <div class="input-group">
+                            <label for="totalHajjInput" class="input-group-text" style="min-width: 150px;">إجمالي عدد الحجاج</label>
+                            <input type="number" id="totalHajjInput" class="form-control" min="0" value="{{ total_hajj }}">
+                            <button class="btn btn-primary" type="button" onclick="updateTotalHajj()">
+                                <i class="fas fa-save ms-1"></i>حفظ
+                            </button>
+                        </div>
+                    </div>
+                    <span id="requestCount" class="badge bg-info ms-2"></span>
+                </div>
+            </div>
+            <div class="table-controls">
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="searchInput" class="form-control search-input" placeholder="ابحث بالاسم، رقم الجواز، رقم التأشيرة...">
+                </div>
+                <select id="statusFilter" class="form-select filter-dropdown">
+                    <option value="all">جميع الحالات</option>
+                    {% for status in STATUSES %}
+                    <option value="{{ status }}">{{ STATUS_LABELS_AR[status] }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0" id="requestsTable">
+                        <thead class="bg-primary" style="color: #fff;">
+                            <tr>
+                                <th data-sortable="true">ID</th>
+                                <th data-sortable="true">الموظف</th>
+                                <th data-sortable="true">اسم الحاج</th>
+                                <th data-sortable="true">رقم الجواز</th>
+                                <th data-sortable="true">رقم التأشيرة</th>
+                                <th data-sortable="true">السبب</th>
+                                <th data-sortable="true">إرجاع البطاقة</th>
+                                <th data-sortable="true">رفع الطلب</th>
+                                <th data-sortable="true">تمت الكتابة</th>
+                                <th data-sortable="true">الحالة</th>
+                                <th data-sortable="true">تاريخ الإنشاء</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for req in requests %}
+                            <tr data-status="{{ req.status }}" data-reason="{{ req.request_reason }}">
+                                <td data-sort="{{ req.id }}">{{ req.id }}</td>
+                                <td>
+                                    <div>{{ req.employee_name }}</div>
+                                    <small class="text-muted">{{ req.employee_number }}</small>
+                                </td>
+                                <td>{{ req.hajj_name }}</td>
+                                <td>{{ req.passport_number }}</td>
+                                <td>{{ req.visa_number }}</td>
+                                <td>{{ REASON_LABELS_AR.get(req.request_reason, req.request_reason) }}</td>
+                                <td data-sort="{{ 1 if req.card_returned else 0 }}">
+                                    {% if req.request_reason == 'Damaged Card' %}
+                                        {% if req.card_returned %}
+                                            <span class="badge bg-success">نعم</span>
+                                        {% else %}
+                                            <span class="badge bg-danger">لا</span>
+                                        {% endif %}
+                                    {% else %}
+                                        <span class="badge bg-secondary">لا ينطبق</span>
+                                    {% endif %}
+                                </td>
+                                <td data-sort="{{ 1 if req.request_upload else 0 }}">
+                                    <div class="form-check d-flex justify-content-center mb-0">
+                                        <input class="form-check-input flag-toggle" type="checkbox"
+                                               data-request-id="{{ req.id }}"
+                                               data-field="request_upload"
+                                               aria-label="تم رفع الطلب"
+                                               {% if req.request_upload %}checked{% endif %}>
+                                    </div>
+                                </td>
+                                <td data-sort="{{ 1 if req.is_written else 0 }}">
+                                    <div class="form-check d-flex justify-content-center mb-0">
+                                        <input class="form-check-input flag-toggle" type="checkbox"
+                                               data-request-id="{{ req.id }}"
+                                               data-field="is_written"
+                                               aria-label="تمت الكتابة"
+                                               {% if req.is_written %}checked{% endif %}>
+                                    </div>
+                                </td>
+                                <td data-sort="{{ req.status }}">
+                                    <select class="form-select form-select-sm status-select"
+                                            data-request-id="{{ req.id }}"
+                                            aria-label="حالة البلاغ">
+                                        {% for status in STATUSES %}
+                                        <option value="{{ status }}" {% if req.status == status %}selected{% endif %}>{{ STATUS_LABELS_AR[status] }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </td>
+                                <td data-sort="{{ req.created_at.isoformat() if req.created_at else '' }}">
+                                    {{ req.created_at.strftime('%Y-%m-%d %H:%M') if req.created_at else '-' }}
+                                </td>
+                            </tr>
+                            {% else %}
+                            <tr class="empty-row">
+                                <td colspan="11" class="text-center py-4">
+                                    <div class="empty-state">
+                                        <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
+                                        <p class="mb-0">لا توجد بلاغات في النظام.</p>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white py-3">
+                <h3 class="h5 mb-0">تعليمات للمشرفين</h3>
+            </div>
+            <div class="card-body">
+                <ul class="mb-0">
+                    <li>يرجى معالجة البلاغات بسرعة لتقليل وقت الانتظار.</li>
+                    <li>تأكد من صحة ودقة جميع المعلومات المدخلة قبل اتخاذ أي إجراء.</li>
+                    <li>قم بتحديث الحالة بشكل دوري لتسهيل عملية المراقبة.</li>
+                    <li>علّم "رفع الطلب" بعد رفع البلاغ في نسك، و"تمت الكتابة" بعد تدوينه في السجل.</li>
+                    <li>تواصل مع الموظف المسؤول إذا احتجت إلى معلومات إضافية أو توضيحات.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+(function () {
+    'use strict';
+
+    const table = document.getElementById('requestsTable');
+    const searchInput = document.getElementById('searchInput');
+    const statusFilter = document.getElementById('statusFilter');
+    const countBadge = document.getElementById('requestCount');
+
+    // Sort state lives outside the sort function so clicking the same header
+    // toggles direction instead of always sorting ascending.
+    const sortState = { column: null, ascending: true };
+
+    function dataRows() {
+        return Array.from(table.tBodies[0].querySelectorAll('tr:not(.empty-row)'));
+    }
+
+    function sortKey(row, column) {
+        const cell = row.children[column];
+        if (!cell) return '';
+        return cell.dataset.sort !== undefined ? cell.dataset.sort : cell.textContent.trim();
+    }
+
+    // Sorts every row, not just the visible ones. The previous version sorted
+    // the filtered subset and then re-showed the hidden rows, which scattered
+    // them through the table in their old order.
+    function sortBy(column) {
+        if (sortState.column === column) {
+            sortState.ascending = !sortState.ascending;
+        } else {
+            sortState.column = column;
+            sortState.ascending = true;
+        }
+
+        const direction = sortState.ascending ? 1 : -1;
+        const sorted = dataRows().sort(function (a, b) {
+            const aKey = sortKey(a, column);
+            const bKey = sortKey(b, column);
+            const aNum = Number(aKey);
+            const bNum = Number(bKey);
+
+            if (aKey !== '' && bKey !== '' && !Number.isNaN(aNum) && !Number.isNaN(bNum)) {
+                return (aNum - bNum) * direction;
+            }
+            return aKey.localeCompare(bKey, 'ar') * direction;
+        });
+
+        const body = table.tBodies[0];
+        sorted.forEach(function (row) { body.appendChild(row); });
+
+        table.querySelectorAll('th').forEach(function (th) {
+            th.classList.remove('th-sort-asc', 'th-sort-desc');
+        });
+        const header = table.querySelectorAll('th')[column];
+        if (header) {
+            header.classList.add(sortState.ascending ? 'th-sort-asc' : 'th-sort-desc');
+        }
+    }
+
+    function applyFilter() {
+        const term = searchInput.value.trim().toLowerCase();
+        const status = statusFilter.value;
+        let visible = 0;
+
+        dataRows().forEach(function (row) {
+            const statusMatch = status === 'all' || row.dataset.status === status;
+            // Columns searched: employee, pilgrim name, passport, visa.
+            const haystack = [1, 2, 3, 4]
+                .map(function (i) { return row.children[i] ? row.children[i].textContent.toLowerCase() : ''; })
+                .join(' ');
+            const textMatch = term === '' || haystack.includes(term);
+
+            const show = statusMatch && textMatch;
+            row.style.display = show ? '' : 'none';
+            if (show) visible += 1;
+        });
+
+        countBadge.textContent = visible + ' بلاغ';
+    }
+
+    function notify(message, type) {
+        const existing = document.getElementById('status-alert');
+        if (existing) existing.remove();
+
+        const alert = document.createElement('div');
+        alert.id = 'status-alert';
+        alert.className = 'alert alert-' + (type === 'success' ? 'success' : 'danger') +
+            ' alert-dismissible fade show custom-alert';
+        alert.setAttribute('role', 'alert');
+        alert.style.cssText = 'max-width:400px;margin:20px auto;left:0;right:0;z-index:1055;' +
+            'position:fixed;top:20px;text-align:center;box-shadow:0 2px 12px rgba(0,0,0,0.12);';
+
+        const text = document.createElement('span');
+        text.style.marginRight = '8px';
+        text.style.verticalAlign = 'middle';
+        text.textContent = message;
+
+        const close = document.createElement('button');
+        close.type = 'button';
+        close.className = 'btn-close';
+        close.setAttribute('data-bs-dismiss', 'alert');
+        close.setAttribute('aria-label', 'إغلاق');
+        close.style.float = 'left';
+
+        alert.append(text, close);
+        document.body.prepend(alert);
+        setTimeout(function () {
+            if (alert.parentNode) bootstrap.Alert.getOrCreateInstance(alert).close();
+        }, 3000);
+    }
+
+    function post(url, payload) {
+        return fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: new URLSearchParams(payload)
+        }).then(function (response) {
+            return response.json().then(function (data) {
+                if (!response.ok || !data.success) {
+                    throw new Error(data.error || 'حدث خطأ في النظام');
+                }
+                return data;
+            });
+        });
+    }
+
+    window.updateTotalHajj = function () {
+        const input = document.getElementById('totalHajjInput');
+        post('/update_total_hajj', { total_hajj: input.value })
+            .then(function (data) { notify(data.message, 'success'); })
+            .catch(function (error) { notify(error.message, 'danger'); });
+    };
+
+    document.addEventListener('DOMContentLoaded', function () {
+        table.querySelectorAll('th[data-sortable="true"]').forEach(function (th, index) {
+            th.style.cursor = 'pointer';
+            th.addEventListener('click', function () {
+                sortBy(Array.prototype.indexOf.call(th.parentNode.children, th));
+                applyFilter();
+            });
+        });
+
+        searchInput.addEventListener('input', applyFilter);
+        statusFilter.addEventListener('change', applyFilter);
+
+        table.querySelectorAll('.status-select').forEach(function (select) {
+            // Remember the last accepted value so a rejected update can roll back.
+            select.dataset.previous = select.value;
+            select.addEventListener('change', function () {
+                const row = select.closest('tr');
+                const cell = select.closest('td');
+                post('/update_status/' + select.dataset.requestId, { status: select.value })
+                    .then(function (data) {
+                        select.dataset.previous = data.status;
+                        row.dataset.status = data.status;
+                        // Keep the sort key in step with the filter key, or
+                        // sorting by الحالة would use the pre-edit value.
+                        cell.dataset.sort = data.status;
+                        notify('تم تحديث الحالة بنجاح', 'success');
+                        applyFilter();
+                    })
+                    .catch(function (error) {
+                        select.value = select.dataset.previous;
+                        notify(error.message, 'danger');
+                    });
+            });
+        });
+
+        table.querySelectorAll('.flag-toggle').forEach(function (box) {
+            box.addEventListener('change', function () {
+                const cell = box.closest('td');
+                // Capture the value this request is for. Flipping `box.checked`
+                // on failure would restore the wrong state if the user toggled
+                // again while the request was still in flight.
+                const intended = box.checked;
+                post('/update_flag/' + box.dataset.requestId, {
+                    field: box.dataset.field,
+                    value: intended ? 'true' : 'false'
+                })
+                    .then(function (data) {
+                        cell.dataset.sort = data.value ? '1' : '0';
+                        notify('تم تحديث البلاغ بنجاح', 'success');
+                    })
+                    .catch(function (error) {
+                        box.checked = !intended;
+                        notify(error.message, 'danger');
+                    });
+            });
+        });
+
+        applyFilter();
+    });
+})();
+</script>
+{% endblock %}

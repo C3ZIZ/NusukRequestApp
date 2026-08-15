@@ -1,20 +1,31 @@
 [project]
 name = "nusuk-request-app"
-version = "0.1.0"
-description = "Flask app to manage Hajj card requests"
-authors = [{ name="Your Name", email="you@example.com" }]
+version = "1.0.0"
+description = "Badeel - Flask app for reporting lost or damaged Nusuk cards"
+readme = "README.md"
 requires-python = ">=3.11"
+authors = [{ name = "Abdulaziz Hafiz", email = "abdulazizhafez2004@gmail.com" }]
+
 dependencies = [
     "flask>=3.1.1",
-    "flask-sqlalchemy>=3.1.1",
-    "flask-login>=0.6.3",
+    "click>=8.1.3",
     "gunicorn>=23.0.0",
-    "psycopg2-binary>=2.9.10",
-    "sqlalchemy>=2.0.41",
+    "python-dotenv>=1.0.0",
     "werkzeug>=3.1.3",
-    "email-validator>=2.2.0"
 ]
+
+[project.optional-dependencies]
+# Only needed to run scripts/migrate_from_supabase.py once. The running app
+# never talks to Supabase.
+migrate = ["supabase>=2.0.0"]
+dev = ["pytest>=8.0.0"]
 
 [build-system]
 requires = ["setuptools", "wheel"]
 build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+packages = ["app", "app.routes"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
