@@ -120,7 +120,9 @@ The database file is created automatically at `data/badeel.db` on first boot.
 ## Deploying on Coolify
 
 1. **New resource → Docker Compose**, pointed at this repository. Coolify reads
-   `docker-compose.yml` and provisions the `badeel-data` volume itself.
+   `docker-compose.yaml` and provisions the `badeel-data` volume itself. The
+   `.yaml` spelling matters: Coolify looks for `/docker-compose.yaml` by default,
+   and reports "Docker Compose file not found" if the file uses `.yml` instead.
 2. **Set `SESSION_SECRET`** in the environment tab. Generate one with:
    ```bash
    python -c "import secrets; print(secrets.token_hex(32))"
